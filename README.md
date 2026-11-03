@@ -6,7 +6,7 @@
 
 > **🌐 Interactive GitHub Pages Reports (English Default + 1-Click `EN | 한국어` Toggle):**  
 > 👉 **Part I (LLM Weight-Space Programming):** **[https://statsleelab.github.io/weight_space_programming/](https://statsleelab.github.io/weight_space_programming/)**  
-> 👉 **Part II (Biological Connectome Weight-Space Programming — *Drosophila* FAFB v783):** **[https://statsleelab.github.io/connectome-weight-edit/](https://statsleelab.github.io/connectome-weight-edit/)** ([Live 3D Lab](https://statsleelab.github.io/connectome-weight-edit/lab.html) | [Full Paper PDF](https://statsleelab.github.io/connectome-weight-edit/paper.pdf) | [Repo](https://github.com/statsleelab/connectome-weight-edit))
+> 👉 **Part II (Biological Connectome Weight-Space Programming — *Drosophila* FAFB v783):** **[https://statsleelab.github.io/connectome-weight-edit/](https://statsleelab.github.io/connectome-weight-edit/)** ([Live 3D Lab](https://statsleelab.github.io/connectome-weight-edit/lab.html) | [Repo](https://github.com/statsleelab/connectome-weight-edit))
 >
 > **Original Paper / Blog:** *Sparks of Weight-Space Programming: LLMs can natively read & write neural network weights*  
 > — Rikiya Takehi, Jayden Teoh, Alex Zhang, Omar Khattab (MIT CSAIL, 2026)  
