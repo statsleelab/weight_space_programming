@@ -132,6 +132,7 @@
         <a class="nav-pill" href="#exp6">Exp 6: 9×9 Go Policy</a>
         <a class="nav-pill" href="#exp7">Exp 7: Sycophancy Circuit</a>
         <a class="nav-pill" href="#exp8">Exp 8: Qwen3.5 Math Edit</a>
+        <a class="nav-pill" href="#critique">Critique &amp; Debate</a>
         <a class="nav-pill" href="#reproduce">Reproduce</a>
       </div>
       <div class="nav-pills lang-ko">
@@ -144,6 +145,7 @@
         <a class="nav-pill" href="#exp6">Exp 6: 9×9 바둑 신경망</a>
         <a class="nav-pill" href="#exp7">Exp 7: 동조화 회로 감사</a>
         <a class="nav-pill" href="#exp8">Exp 8: Qwen3.5 가중치 교정</a>
+        <a class="nav-pill" href="#critique">비판적 고찰</a>
         <a class="nav-pill" href="#reproduce">재현 안내</a>
       </div>
     </div>
@@ -415,9 +417,78 @@
       </div>
     </section>
 
+    <!-- CRITICAL EVALUATION & COMMUNITY DEBATE -->
+    <section id="critique">
+      <span class="section-tag">§3 · Critical Evaluation &amp; Community Debate</span>
+      <div class="lang-en">
+        <h2>Is Experiment 8 Truly "Weight-Space Programming," or Automated Loop Suppression?</h2>
+        <p>
+          Following the release of the paper and its X thread, significant methodological critiques emerged from the ML and mechanistic interpretability communities — centered primarily on <strong>Experiment 8 (<code>Qwen3.5-0.8B</code> MATH-500: 7.9% → 48.1%)</strong>. Our inspection of the raw agent work notes (<code>data/exp8_math/runs/p10c..p50c/work_notes/</code>) confirms that these criticisms are scientifically well-founded:
+        </p>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="card" style="margin-top:0;">
+            <h3 style="margin-top:0;color:var(--danger);">1. Fixing a Decoding Loop Artifact, Not Teaching Math</h3>
+            <p style="font-size:14px;">
+              As Astra's own logs note (<code>p25c/work_notes/notes.md</code>): <em>"Texts commonly solve the arithmetic correctly then enter hundreds of identical self-checking lines ('Wait, ...')."</em>
+              The base <code>Qwen3.5-0.8B</code> model already knows how to solve ~45–50% of MATH-500 problems; its <code>7.9%</code> baseline score is an artifact of greedy/default <code>&lt;think&gt;</code> repetition loops exhausting the 32,768-token window (<code>93.0%</code> cut share) before emitting <code>\boxed{}</code>.
+              Simply disabling thinking mode (<code>enable_thinking=False</code> / <code>/no_think</code>) or applying a standard repetition penalty recovers ~45%+ accuracy without modifying a single weight.
+            </p>
+          </div>
+          <div class="card" style="margin-top:0;">
+            <h3 style="margin-top:0;color:var(--accent);">2. Activation Steering Folded into Weights, Not Pure Weight Reading</h3>
+            <p style="font-size:14px;">
+              Unlike Experiments 1–6 (where the LLM genuinely read raw weights or hand-coded explicit spatial/symbolic circuits from scratch), Astra did <strong>not</strong> discover the <code>Qwen3.5-0.8B</code> edit by reading floating-point matrices.
+              Instead, as documented in <code>p50c/work_notes/final_report.md</code>, Astra ran teacher-forced forward passes on matched productive vs. repetitive texts, extracted a contrastive residual-stream activation vector \(u\) at layers 16 and 20, and applied a rank-1 projection \(W \leftarrow W_0 - 6 u (u^\top W_0)_{\text{mask64}}\).
+              Methodologically, this is <strong>automated Representation Engineering / Activation Steering folded into MLP weights</strong> (or attention head ablation in <code>p25c</code>), rather than symbolic programming in weight space.
+            </p>
+          </div>
+          <div class="card" style="margin-top:0;">
+            <h3 style="margin-top:0;color:var(--success);">3. Where True Weight-Space Programming Ends &amp; Tool-Assisted Interpretability Begins</h3>
+            <p style="font-size:14px;">
+              Taken together, the 8 experiments actually draw a sharp boundary:
+              <strong>Pure Weight-Space Programming succeeds on small, structured networks (Exps 1–6, 17K–1.48M params)</strong> where features align with spatial axes or low-rank operators.
+              On pretrained billion-parameter LLMs (<strong>Exps 7–8</strong>), polysemantic superposition and RoPE nonlinearities make pure weight reading fail at chance (<code>P = 0.50</code>), forcing the agent to rely on forward-pass activation probes and rank-1 steering projections.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="lang-ko">
+        <h2>비판적 고찰: 실험 8은 진정한 '가중치 프로그래밍'인가, 아니면 '무한 루프 억제'인가?</h2>
+        <p>
+          원문 공개 이후 X(트위터)와 머신러닝 학계에서는 특히 <strong>실험 8(<code>Qwen3.5-0.8B</code> MATH-500: 7.9% → 48.1%)</strong>의 해석을 두고 날카로운 방법론적 비판이 제기되었습니다. 우리가 저자들의 원시 실험 노트(<code>data/exp8_math/runs/p10c..p50c/work_notes/</code>)를 직접 대조해 본 결과, 이러한 비판은 기술적으로 매우 타당한 근거를 가지고 있습니다.
+        </p>
+        <div class="grid-3" style="margin-top:18px;">
+          <div class="card" style="margin-top:0;">
+            <h3 style="margin-top:0;color:var(--danger);">1. 수학 실력을 높인 것이 아니라 <code>&lt;think&gt;</code> 반복 루프 버그를 끈 것</h3>
+            <p style="font-size:14px;">
+              Astra의 실험 노트(<code>p25c/work_notes/notes.md</code>) 자체가 기록하고 있듯, <em>"원본 모델은 이미 수식을 올바르게 풀어낸 뒤 'Wait, ...'로 시작하는 동일한 검산 문장을 수백 번 반복하다가"</em> 32,768 토큰 한도에 걸려 절단(93.0%)되었기 때문에 최종 정답(<code>\boxed{}</code>)을 출력하지 못해 <code>7.9%</code>가 나왔던 것입니다.
+              실제로 <code>Qwen3.5-0.8B</code>에서 <code>thinking mode</code>를 끄거나(<code>enable_thinking=False</code>) 일반적인 반복 패널티(Repetition penalty)만 적용해도 가중치를 단 하나도 건드리지 않고 <strong>MATH-500에서 약 45% 내외의 점수</strong>가 나옵니다.
+            </p>
+          </div>
+          <div class="card" style="margin-top:0;">
+            <h3 style="margin-top:0;color:var(--accent);">2. 가중치를 읽고 코딩한 것이 아니라 '활성화 스티어링(Activation Steering)'을 적용한 것</h3>
+            <p style="font-size:14px;">
+              실험 1~6에서는 LLM이 실제로 가중치 숫자의 공간적 배치를 읽거나 거리 비교기·활로 계산기 같은 명시적 논리 회로를 가중치에 직접 코딩했습니다.
+              반면 실험 8의 내부 기록(<code>p50c/work_notes/final_report.md</code>)을 보면, Astra는 가중치만 보고 수학 회로를 해독한 것이 아니라 <strong>정상 문장과 반복 루프 문장을 모델에 통과(Forward pass)시켜 16·20층 은닉 상태(Activation)의 차이 벡터 \(u\)를 구한 뒤, \(W \leftarrow W_0 - 6 u (u^\top W_0)_{\text{mask64}}\) 공식으로 반복 방향 성분을 빼준 것</strong>입니다.
+              이는 엄밀히 말해 '가중치 공간 프로그래밍'이라기보다 <strong>기존의 표현 공학(Representation Engineering / Activation Steering) 및 헤드 절제(Head Ablation, <code>p25c</code>)를 LLM 에이전트가 자동화한 것</strong>에 가깝습니다.
+            </p>
+          </div>
+          <div class="card" style="margin-top:0;">
+            <h3 style="margin-top:0;color:var(--success);">3. 이 연구의 진짜 의의와 명확한 한계선</h3>
+            <p style="font-size:14px;">
+              따라서 본 연구는 두 영역을 구분해서 평가해야 공정합니다.
+              <strong>실험 1~6(1.7만~148만 파라미터 제어·게임·바둑 신경망)</strong>은 실제로 경사하강법 없이 가중치를 직접 읽고 쓰는 <em>Weight-Space Programming</em>의 놀라운 가능성을 증명했습니다.
+              반면 <strong>실험 7~8(수억~수십억 파라미터 사전학습 LLM)</strong>은 가중치만 읽는 방식이 실패(<code>P = 0.50</code>)함을 보여주고, 대신 <strong>LLM 에이전트가 순전파 프로브를 활용해 모델의 병목(무한 루프 등)을 스스로 진단하고 랭크-1 가중치 투영으로 패치하는 '자동화된 기계적 해석가능성(Automated Mechanistic Interpretability)'</strong>을 시연한 것으로 보는 것이 가장 정확합니다.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- REPRODUCE GUIDE -->
     <section id="reproduce">
-      <span class="section-tag">§3 · Reproducibility Guide</span>
+      <span class="section-tag">§4 · Reproducibility Guide</span>
       <div class="lang-en">
         <h2>Run Our Complete Reproduction Locally in 3.5 Seconds</h2>
         <p>
