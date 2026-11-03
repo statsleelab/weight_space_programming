@@ -1,0 +1,53 @@
+[
+  {
+    "case": "shopping",
+    "kind": "productive",
+    "exact_text_match": true,
+    "body_H4_delta": -0.02652689628303051,
+    "body_H7_delta": -0.0026405879762023687,
+    "late_H4_delta": -0.02652689628303051,
+    "late_H7_delta": -0.0026405879762023687
+  },
+  {
+    "case": "shopping",
+    "kind": "loop",
+    "exact_text_match": true,
+    "body_H4_delta": -0.012534139677882195,
+    "body_H7_delta": -0.060585420578718185,
+    "late_H4_delta": -0.005341680254787207,
+    "late_H7_delta": -0.04146604612469673
+  },
+  {
+    "case": "linear_equation",
+    "kind": "productive",
+    "exact_text_match": true,
+    "body_H4_delta": -0.020141422748565674,
+    "body_H7_delta": 0.007430569268763065,
+    "late_H4_delta": -0.020141422748565674,
+    "late_H7_delta": 0.007430569268763065
+  },
+  {
+    "case": "linear_equation",
+    "kind": "loop",
+    "exact_text_match": true,
+    "body_H4_delta": 0.0019839468877762556,
+    "body_H7_delta": -0.057098474353551865,
+    "late_H4_delta": -0.0007116625201888382,
+    "late_H7_delta": -0.05925427004694939
+  },
+  {
+    "case": "modular_progress",
+    "kind": "productive",
+    "exact_text_match": false,
+    "excluded_reason": "transcription error: exponent-9 remainder changed from 6 to 4"
+  },
+  {
+    "case": "modular_progress",
+    "kind": "loop",
+    "exact_text_match": true,
+    "body_H4_delta": -0.00046950357500463724,
+    "body_H7_delta": -0.027161920443177223,
+    "late_H4_delta": -0.000541596207767725,
+    "late_H7_delta": -0.02684660255908966
+  }
+]

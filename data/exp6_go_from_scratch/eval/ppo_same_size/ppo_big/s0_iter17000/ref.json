@@ -1,0 +1,7 @@
+{
+ "seed": 0,
+ "iter": 17000,
+ "final": false,
+ "source": "<repo>/results/gomatch/train/go_9x9_ppo_big_s0",
+ "resumed": []
+}

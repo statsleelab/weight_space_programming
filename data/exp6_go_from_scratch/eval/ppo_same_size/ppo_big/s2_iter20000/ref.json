@@ -1,0 +1,13 @@
+{
+ "seed": 2,
+ "iter": 20000,
+ "final": true,
+ "source": "<repo>/results/gomatch/train/go_9x9_ppo_big_s2",
+ "resumed": [
+  {
+   "from_iter": 16000,
+   "how": "iter16000.npz: weights and key exact, Adam moments reset, opponent pool refilled",
+   "at": "2026-10-24T06:54:05+0000"
+  }
+ ]
+}

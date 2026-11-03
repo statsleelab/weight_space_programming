@@ -1,0 +1,38 @@
+[
+  {
+    "case": "shopping",
+    "kind": "productive",
+    "body_delta": -0.002682305406779051,
+    "late_delta": -0.002682305406779051
+  },
+  {
+    "case": "shopping",
+    "kind": "loop",
+    "body_delta": 0.00816801656037569,
+    "late_delta": 0.004306241404265165
+  },
+  {
+    "case": "linear_equation",
+    "kind": "productive",
+    "body_delta": -0.011455855332314968,
+    "late_delta": -0.011455855332314968
+  },
+  {
+    "case": "linear_equation",
+    "kind": "loop",
+    "body_delta": 0.00803687609732151,
+    "late_delta": 0.007451774552464485
+  },
+  {
+    "case": "modular_progress",
+    "kind": "productive",
+    "body_delta": 0.0013557664351537824,
+    "late_delta": 0.0013557664351537824
+  },
+  {
+    "case": "modular_progress",
+    "kind": "loop",
+    "body_delta": 0.0019219532841816545,
+    "late_delta": 0.000691397930495441
+  }
+]

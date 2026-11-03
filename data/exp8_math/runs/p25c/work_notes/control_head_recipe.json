@@ -1,0 +1,1 @@
+{"tensor": "model.language_model.layers.15.self_attn.o_proj.weight", "head": 4, "multiplier": 0.0, "purpose": "temporary same-KV-group negative control"}
