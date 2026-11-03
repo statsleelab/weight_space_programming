@@ -138,11 +138,11 @@
         <div class="callout green" style="margin-top:16px;">
           <strong>${T(
             `8×8 Active vs. Dead Input Map Reconstructed from Layer-1 Weights:`,
-            `1층 가중치(fc1) 영점 분포에서 복원한 8×8 활성(·) vs 비활성/벽(■) 지도:`
+            `1층 가중치(fc1)의 영가중치 분포로부터 복원한 8×8 활성 통로(·) 및 비활성 벽면(■) 지형:`
           )}</strong>
           ${T(
             `By locating dead input pixels in <code>fc1.weight</code>, we recover the spatial footprint of each game — including the <strong>exact 8×8 Pac-Man wall (■) vs. corridor (·) maze</strong> on Policy C (100% match).`,
-            `1층 가중치 <code>fc1.weight</code>에서 죽은 픽셀(■)과 활성 통로(·)를 구분하면 게임을 한 번도 실행하지 않고도 공간 지형(특히 Pac-Man의 8×8 미로 지도 100% 일치)을 그대로 복원할 수 있습니다.`
+            `입력층 가중치 <code>fc1.weight</code>에서 가중치 노름이 0으로 수렴한 비활성 픽셀(■)과 활성 통로(·)를 분리하면, 환경 실행 없이도 각 게임의 공간적 지형(특히 Policy C의 8×8 Pac-Man 미로 구조 100% 일치)을 그대로 복원할 수 있습니다.`
           )}
           <div style="margin-top:12px;">${mazeCells}</div>
         </div>`;
@@ -155,21 +155,21 @@
         <div>
           <h3>${T(
             `Network ${net.id} — Inferred: <span style="color:var(--accent)">${net.inferred_game.toUpperCase()}</span> (Ground Truth: ${net.true_game.toUpperCase()})`,
-            `네트워크 ${net.id} — 추론 결과: <span style="color:var(--accent)">${net.inferred_game.toUpperCase()}</span> (정답: ${net.true_game.toUpperCase()})`
+            `네트워크 ${net.id} — 식별 결과: <span style="color:var(--accent)">${net.inferred_game.toUpperCase()}</span> (실제 환경: ${net.true_game.toUpperCase()})`
           )}</h3>
           <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:12px;">
             ${T(
               `Parameters: <code>${net.parameters.toLocaleString()}</code> | Env Steps: <code>${net.env_steps.toLocaleString()}</code> | Mean Return: <code>${net.mean_return}</code> | Confidence: <code>${(net.astra_confidence * 100).toFixed(0)}%</code>`,
-              `파라미터: <code>${net.parameters.toLocaleString()}개</code> | 학습 스텝: <code>${net.env_steps.toLocaleString()}</code> | 평균 리턴: <code>${net.mean_return}</code> | 확신도: <code>${(net.astra_confidence * 100).toFixed(0)}%</code>`
+              `파라미터 수: <code>${net.parameters.toLocaleString()}개</code> | 학습 스텝: <code>${net.env_steps.toLocaleString()}</code> | 평균 보상: <code>${net.mean_return}</code> | 추론 신뢰도: <code>${(net.astra_confidence * 100).toFixed(0)}%</code>`
             )}
           </p>
           <h4>${T(
             `Output Layer (fc3) Action Channel L2 Energy & Biases`,
-            `출력층(fc3) 5개 행동 채널별 L2 에너지 및 편향(Bias)`
+            `출력층(fc3) 5개 행동 채널별 L2 노름 및 편향(Bias)`
           )}</h4>
           ${actionBars}
           <div style="margin-top:14px;">
-            <h4>${T(`Quoted Weight Verification`, `논문 인용 가중치 비트 단위 대조`)}</h4>
+            <h4>${T(`Quoted Weight Verification`, `논문 인용 가중치 수치 검증`)}</h4>
             <div>${quotesHTML}</div>
           </div>
           ${pacmanMazeHTML}
@@ -177,33 +177,33 @@
         <div>
           <h4>${T(
             `Input Layer (fc1) 8×8 Spatial Sensitivity Heatmaps`,
-            `입력층(fc1) 8×8 공간 채널 민감도 히트맵`
+            `입력층(fc1) 8×8 공간 채널별 가중치 민감도 히트맵`
           )}</h4>
           <div style="display:flex;flex-wrap:wrap;gap:16px;">
             <div>
-              <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">${T(`Channel 0: Agent Position`, `Channel 0: Agent (플레이어 위치)`)}</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">${T(`Channel 0: Agent Position`, `채널 0: 에이전트 위치 (Agent)`)}</div>
               ${renderMatrixHTML(net.spatial_heatmaps.agent, "blue")}
             </div>
             <div>
-              <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">${T(`Channel 1: Moving Objects`, `Channel 1: Moving (공/적/차량)`)}</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">${T(`Channel 1: Moving Objects`, `채널 1: 이동 객체 (Moving)`)}</div>
               ${renderMatrixHTML(net.spatial_heatmaps.moving, "amber")}
             </div>
             <div>
-              <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">${T(`Channel 2: Reward Targets`, `Channel 2: Reward (벽돌/먹이/목표)`)}</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">${T(`Channel 2: Reward Targets`, `채널 2: 보상 타깃 (Reward)`)}</div>
               ${renderMatrixHTML(net.spatial_heatmaps.reward, "green")}
             </div>
           </div>
           <div class="callout" style="margin-top:16px;font-size:13.5px;">
-            <strong>${T(`Weight-Space Geometric Signatures:`, `가중치 기하학적 지문(Weight-Space Signature):`)}</strong><br/>
+            <strong>${T(`Weight-Space Geometric Signatures:`, `가중치 공간의 기하학적 특성 요약:`)}</strong><br/>
             ${T(
               `• <strong>Policy A (Breakout):</strong> Agent sensitivity is 100% concentrated on the bottom row (Row 7 = <code>115.65</code>), Reward energy sits in top brick rows (Rows 1–3), and only Left/Right actions are active.<br/>
                • <strong>Policy B (Pong):</strong> Agent is locked to the right paddle column (Col 6 = <code>122.42</code>) with only Up/Down movement active.<br/>
                • <strong>Policy C (Pac-Man):</strong> All 4 cardinal directions are active, and zero-weight pixels exactly carve out the 8×8 maze walls.<br/>
                • <strong>Policy D (Freeway):</strong> Agent climbs straight up Column 4 (<code>b[Up]=+3.142, W1[row=8,col=1]=+4.066/-4.013</code>) while dodging horizontal 4-column periodic traffic (period-4 correlation <code>0.991</code>).`,
-              `• <strong>Policy A (Breakout):</strong> Agent 에너지가 맨 아래 행(Row 7 = <code>115.65</code>)에만 집중되고, 상단(Rows 1~3)에 벽돌(Reward) 에너지가 분포하며 오직 좌/우 이동만 활성화됨.<br/>
-               • <strong>Policy B (Pong):</strong> Agent가 오른쪽 세로줄(Col 6 = <code>122.42</code>)에 고정되어 상/하 패들 이동만 수행.<br/>
-               • <strong>Policy C (Pac-Man):</strong> 4방향 이동이 모두 켜져 있고, 벽 위치의 가중치가 정확히 <code>0.000</code>으로 죽어 있어 8×8 미로 지도가 그대로 드러남.<br/>
-               • <strong>Policy D (Freeway):</strong> Agent가 세로줄을 따라 위로만 전진(<code>b[Up]=+3.142</code>)하며 가로 4열 주기의 차량(주기 상관계수 <code>0.991</code>)을 회피함.`
+              `• <strong>Policy A (Breakout):</strong> 에이전트 민감도가 최하단 행(Row 7 = <code>115.65</code>)에 집중되어 있으며, 상단(Rows 1~3)의 벽돌 영역에 보상 민감도가 분포하고 좌·우 이동 채널만 활성화되어 있습니다.<br/>
+               • <strong>Policy B (Pong):</strong> 에이전트가 우측 패들 열(Col 6 = <code>122.42</code>)을 따라 상·하 방향으로만 이동하도록 가중치가 형성되어 있습니다.<br/>
+               • <strong>Policy C (Pac-Man):</strong> 상·하·좌·우 4방향 행동이 모두 활성화되어 있으며, 벽면에 해당하는 픽셀의 가중치가 <code>0.000</code>으로 수렴하여 8×8 미로 구조가 그대로 나타납니다.<br/>
+               • <strong>Policy D (Freeway):</strong> 에이전트가 중앙 열을 따라 상단으로 전진(<code>b[Up]=+3.142</code>)하며, 4열 주기로 반복되는 수평 이동 차량 패턴(주기 상관계수 <code>0.991</code>)을 감지합니다.`
             )}
           </div>
         </div>
@@ -239,56 +239,56 @@
         <div>
           <h3>${T(
             `${m.id} — Inferred Shape: <span style="color:var(--accent)">${m.inferred_shape.toUpperCase()}</span> (Ground Truth: ${m.true_shape.toUpperCase()})`,
-            `${m.id} — 추론 도형: <span style="color:var(--accent)">${m.inferred_shape.toUpperCase()}</span> (정답: ${m.true_shape.toUpperCase()})`
+            `${m.id} — 추론 도형: <span style="color:var(--accent)">${m.inferred_shape.toUpperCase()}</span> (실제 도형: ${m.true_shape.toUpperCase()})`
           )}</h3>
           <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:12px;">
             ${T(
               `Parameters: <code>${ws.parameters.toLocaleString()}</code> | Astra Guess: <code>${m.astra_guess}</code> (Confidence <code>${(m.astra_confidence * 100).toFixed(0)}%</code>) | Classifier Purity: <code>${(m.classifier_purity * 100).toFixed(1)}%</code>`,
-              `파라미터: <code>${ws.parameters.toLocaleString()}개</code> | Astra 예측: <code>${m.astra_guess}</code> (확신도 <code>${(m.astra_confidence * 100).toFixed(0)}%</code>) | 분류기 순도: <code>${(m.classifier_purity * 100).toFixed(1)}%</code>`
+              `파라미터 수: <code>${ws.parameters.toLocaleString()}개</code> | Astra 판별: <code>${m.astra_guess}</code> (신뢰도 <code>${(m.astra_confidence * 100).toFixed(0)}%</code>) | 분류기 순도: <code>${(m.classifier_purity * 100).toFixed(1)}%</code>`
             )}
           </p>
           <div class="bar-row">
-            <div class="bar-label">${T(`Axis-Aligned Energy`, `수평/수직(Axis) 비중`)}</div>
+            <div class="bar-label">${T(`Axis-Aligned Energy`, `수평·수직 성분 비율`)}</div>
             <div class="bar-track"><div class="bar-fill" style="width:${(ws.axis_aligned_fraction * 100).toFixed(1)}%">${(ws.axis_aligned_fraction * 100).toFixed(1)}%</div></div>
             <div class="bar-val">${ws.axis_aligned_fraction.toFixed(3)}</div>
           </div>
           <div class="bar-row">
-            <div class="bar-label">${T(`Diagonal Energy`, `대각선(Diagonal) 비중`)}</div>
+            <div class="bar-label">${T(`Diagonal Energy`, `대각선 성분 비율`)}</div>
             <div class="bar-track"><div class="bar-fill green" style="width:${(ws.diagonal_fraction * 100).toFixed(1)}%">${(ws.diagonal_fraction * 100).toFixed(1)}%</div></div>
             <div class="bar-val">${ws.diagonal_fraction.toFixed(3)}</div>
           </div>
           <div class="bar-row">
-            <div class="bar-label">${T(`Bottom–Top Asymmetry`, `하단-상단 비대칭성`)}</div>
+            <div class="bar-label">${T(`Bottom–Top Asymmetry`, `상하 비대칭 지수`)}</div>
             <div class="bar-track"><div class="bar-fill ${ws.bottom_top_asymmetry > 0.15 ? 'red' : ''}" style="width:${Math.min(100, Math.max(5, Math.abs(ws.bottom_top_asymmetry) * 180)).toFixed(1)}%">${ws.bottom_top_asymmetry >= 0 ? '+' : ''}${ws.bottom_top_asymmetry.toFixed(3)}</div></div>
             <div class="bar-val">${ws.bottom_top_asymmetry.toFixed(3)}</div>
           </div>
-          ${quotesHTML ? `<div style="margin-top:14px;"><h4>${T('Quoted Weight Verification', '논문 인용 가중치 검증')}</h4><div>${quotesHTML}</div></div>` : ''}
+          ${quotesHTML ? `<div style="margin-top:14px;"><h4>${T('Quoted Weight Verification', '논문 인용 가중치 수치 검증')}</h4><div>${quotesHTML}</div></div>` : ''}
           <div class="callout" style="margin-top:14px;font-size:13.5px;">
-            <strong>${T(`How to Read Shapes Directly from Diffusion Weights:`, `가중치만으로 도형을 읽는 원리:`)}</strong><br/>
+            <strong>${T(`How to Read Shapes Directly from Diffusion Weights:`, `출력층 가중치 기하학에 기반한 도형 판별 원리:`)}</strong><br/>
             ${T(
               `Each column of the output projection <code>W3 (144×64)</code> acts as a <strong>local stroke template</strong> stamped onto the 12×12 canvas.
                <code>model_b (Square)</code> concentrates <code>60.5%</code> of its gradient energy along horizontal/vertical edges;
                <code>model_c (Triangle)</code> exhibits strong bottom-vs-top base asymmetry (<code>+0.391</code>) and diagonal hypotenuse strokes;
                <code>model_a (Circle)</code> is vertically symmetric (<code>-0.017</code>) with smooth isotropic arcs.`,
-              `출력층 <code>W3 (144×64)</code>의 각 열(Column)은 12×12 픽셀 공간에 더해지는 <strong>국소 획(Stroke) 템플릿</strong>입니다.
-               <code>model_b (Square)</code>는 수평·수직 모서리 에너지가 <code>60.5%</code>로 가장 높고,
-               <code>model_c (Triangle)</code>는 하단 밑변이 상단 꼭짓점보다 훨씬 무거운 상하 비대칭성(<code>+0.391</code>)과 빗변(Diagonal) 필터를 가지며,
-               <code>model_a (Circle)</code>는 상하 대칭(<code>-0.017</code>)이면서 8방향 둥근 호(Arc)를 그립니다.`
+              `출력 투영 행렬 <code>W3 (144×64)</code>의 각 열(Column)은 12×12 픽셀 격자에 투영되는 <strong>국소 윤곽선(Stroke) 기저 필터</strong>로 작용합니다.
+               <code>model_b (Square)</code>는 그래디언트 에너지의 <code>60.5%</code>가 수평·수직 변에 집중되어 있으며,
+               <code>model_c (Triangle)</code>는 하단 밑변과 상단 꼭짓점 간의 뚜렷한 상하 비대칭성(<code>+0.391</code>) 및 대각선 빗변 성분을 보이고,
+               <code>model_a (Circle)</code>는 상하 대칭(<code>-0.017</code>)을 유지하면서 등방성 원호(Arc) 분포를 형성합니다.`
             )}
           </div>
         </div>
         <div>
           <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;">
             <div>
-              <h4>${T(`① W3 Mean Positive Template (0 Forward Passes)`, `① 가중치 W3 양(+)의 평균 템플릿 (Forward Pass 0회)`)}</h4>
+              <h4>${T(`① W3 Mean Positive Template (0 Forward Passes)`, `① W3 양(+)의 가중치 평균 템플릿 (순전파 0회)`)}</h4>
               ${renderMatrixHTML(ws.mean_pos_template, "blue")}
             </div>
             <div>
-              <h4>${T(`② Output Bias b3 12×12 Grid`, `② 편향 b3 12×12 그리드 (배경 억제 마스크)`)}</h4>
+              <h4>${T(`② Output Bias b3 12×12 Grid`, `② 출력 편향 b3의 12×12 공간 분포`)}</h4>
               ${renderMatrixHTML(ws.b3_grid, "diverging")}
             </div>
             <div>
-              <h4>${T(`③ Live 1,000-Step Reverse DDPM Sample`, `③ 실제 1,000-step 역확산 생성 샘플 (검증용)`)}</h4>
+              <h4>${T(`③ Live 1,000-Step Reverse DDPM Sample`, `③ 1,000-step 역확산 생성 샘플 (검증용)`)}</h4>
               ${renderMatrixHTML(m.generated_sample_grid, "green")}
             </div>
           </div>
@@ -354,7 +354,7 @@
         <td style="color:var(--success);font-weight:700;">${r.astra_corpus_guess} ✓</td>
         <td class="mono">${r.astra_copy_heads.join(", ")}</td>
         <td class="mono">${r.true_copy_heads_induct_gt_0_2.join(", ")}</td>
-        <td><span class="badge green">${T('100% Match', '100% 일치')}</span></td>
+        <td><span class="badge green">${T('100% Match', '완벽 일치')}</span></td>
       </tr>
     `).join("");
 
@@ -363,30 +363,30 @@
         <div>
           <h3>${T(
             `Corpus: <span style="color:var(--accent)">${corpusKey.toUpperCase()}</span> (7,084,032 Weights, Embeddings Stripped)`,
-            `코퍼스: <span style="color:var(--accent)">${corpusKey.toUpperCase()}</span> (임베딩·언임베딩 제거된 순수 가중치 7,084,032개)`
+            `학습 코퍼스: <span style="color:var(--accent)">${corpusKey.toUpperCase()}</span> (임베딩이 제거된 중간 블록 가중치 7,084,032개)`
           )}</h3>
           <p style="font-size:13.5px;color:var(--text-muted);">
             ${T(
               `Even with token embeddings and the output LM head completely deleted, Astra computes the gauge-invariant operators <code>M = (1/8) P D W_q^T W_k D P</code> and <code>B = P W_o W_v D P</code> along with cross-layer K-composition to <strong>identify the training corpus (6/6 runs) and every single induction copy head with 100% accuracy</strong>.`,
-              `단어장(Embedding)과 출력층(LM Head)을 완전히 삭제하고 오직 중간 4개 층(24개 어텐션 헤드) 가중치만 제공했음에도, Astra는 게이지 불변 연산자 <code>M = (1/8) P D W_q^T W_k D P</code>와 <code>B = P W_o W_v D P</code>의 특이값 스펙트럼 및 층간 K-composition을 계산해 <strong>코퍼스 종류(6/6)와 Induction Copy Head(24개 중 정답 헤드 전수)를 정확히 찾아냈습니다.</strong>`
+              `토큰 임베딩과 출력 헤드가 완전히 제거된 상태에서도 게이지 불변 연산자 <code>M = (1/8) P D W_q^T W_k D P</code> 및 <code>B = P W_o W_v D P</code>의 특이값 분포와 층간 K-합성(K-composition) 지수를 계산하여, <strong>학습 코퍼스(6/6 런)와 귀납 복사 헤드(Induction Copy Head)를 모두 정확하게 특정</strong>했습니다.`
             )}
           </p>
           <div style="margin:12px 0;">
-            <span class="badge purple">${T(`W_proj[3] SV28/SV32 Drop Ratio`, `W_proj[3] SV28/SV32 급락 비율`)}: ${net.w_proj3_sv28_to_sv32_ratio}</span>
-            <span class="badge green">${T(`Ground-Truth Induction Heads`, `정답 Induction Heads`)}: ${net.true_copy_heads.join(", ")}</span>
+            <span class="badge purple">${T(`W_proj[3] SV28/SV32 Drop Ratio`, `W_proj[3] 특이값 급락 비율 (SV28/SV32)`)}: ${net.w_proj3_sv28_to_sv32_ratio}</span>
+            <span class="badge green">${T(`Ground-Truth Induction Heads`, `실제 귀납 헤드 (Ground Truth)`)}: ${net.true_copy_heads.join(", ")}</span>
           </div>
-          ${quotesHTML ? `<div style="margin-top:10px;"><h4>${T('Quoted Operator Verification', '논문 인용 수식 검증 (Figure & 본문)')}</h4>${quotesHTML}</div>` : ''}
-          <h4 style="margin-top:16px;">${T(`All 6 Evaluation Runs Summary`, `전체 6개 실험 런(Run) 검증 요약표`)}</h4>
+          ${quotesHTML ? `<div style="margin-top:10px;"><h4>${T('Quoted Operator Verification', '논문 인용 연산자 수치 검증')}</h4>${quotesHTML}</div>` : ''}
+          <h4 style="margin-top:16px;">${T(`All 6 Evaluation Runs Summary`, `전체 6개 평가 런(Run) 검증 결과`)}</h4>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>Run ID</th>
-                  <th>${T(`True Corpus`, `실제 언어`)}</th>
-                  <th>${T(`Astra Guess`, `Astra 추론`)}</th>
-                  <th>${T(`Astra Copy Heads`, `Astra가 찾은 Copy Head`)}</th>
-                  <th>${T(`True Copy Heads`, `실제 Copy Head`)}</th>
-                  <th>${T(`Status`, `결과`)}</th>
+                  <th>${T(`True Corpus`, `실제 코퍼스`)}</th>
+                  <th>${T(`Astra Guess`, `Astra 판별`)}</th>
+                  <th>${T(`Astra Copy Heads`, `추론된 귀납 헤드`)}</th>
+                  <th>${T(`True Copy Heads`, `실제 귀납 헤드`)}</th>
+                  <th>${T(`Status`, `검증 결과`)}</th>
                 </tr>
               </thead>
               <tbody>${runsRows}</tbody>
@@ -396,12 +396,12 @@
         <div>
           <h4>${T(
             `All 24 Attention Heads (L0H0 – L3H5): Gauge-Invariant QK/OV Norms & Induction Score`,
-            `24개 어텐션 헤드(L0H0 ~ L3H5) 게이지 불변 QK/OV 노름 & Induction 지수`
+            `24개 어텐션 헤드(L0H0 ~ L3H5)의 게이지 불변 QK/OV 노름 및 귀납 지수`
           )}</h4>
           <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:6px;">
             ${T(
               `Highlighted cells (★ Copy) mark heads with ground-truth data induction score > 0.2 — matching Astra's pure weight-space predictions 100%.`,
-              `강조된 테두리(★ Copy)는 실제 데이터 통과 시 Induction 지수가 0.2 이상인 헤드이며, Astra가 가중치 행렬 곱만으로 찾아낸 헤드와 100% 일치합니다.`
+              `강조 표시된 셀(★ Copy)은 실제 데이터 순전파 기준 귀납 지수(Induction Score)가 0.2를 초과하는 헤드로, 가중치만으로 추론한 결과와 100% 일치합니다.`
             )}
           </p>
           ${headGridHTML}
@@ -439,43 +439,44 @@
       <div class="grid-3" style="margin-bottom:18px;">
         <div class="kpi-card">
           <div class="kpi-val">0.0% → 100.0%</div>
-          <div class="kpi-label">${T(`Success Rate (0/256 → 1,024/1,024)`, `성공률 (0/256 → 1,024/1,024)`)}</div>
-          <div class="kpi-desc">${T(`One-shot weight patch solves 100% of test episodes`, `단 한 번의 가중치 패치로 1,024개 테스트 에피소드 전승`)}</div>
+          <div class="kpi-label">${T(`Success Rate (0/256 → 1,024/1,024)`, `에피소드 성공률 (0/256 → 1,024/1,024)`)}</div>
+          <div class="kpi-desc">${T(`One-shot weight patch solves 100% of test episodes`, `단일 가중치 패치로 1,024개 평가 에피소드 전승 달성`)}</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-val">6,073 / 171,664</div>
-          <div class="kpi-label">${T(`Modified Weights (3.54%)`, `수정된 가중치 수 (3.54%)`)}</div>
-          <div class="kpi-desc">${T(`51 Python slice assignments, Max Diff = ${exp4.max_diff_vs_reference}`, `51개 파이썬 슬라이스 할당문, 참조 텐서 오차 ${exp4.max_diff_vs_reference}`)}</div>
+          <div class="kpi-label">${T(`Modified Weights (3.54%)`, `수정된 파라미터 비율 (3.54%)`)}</div>
+          <div class="kpi-desc">${T(`51 Python slice assignments, Max Diff = ${exp4.max_diff_vs_reference}`, `51개 슬라이스 할당문 적용, 참조 텐서 대비 오차 ${exp4.max_diff_vs_reference}`)}</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-val">79.4 Steps</div>
-          <div class="kpi-label">${T(`Mean Episode Length After Patch`, `패치 후 평균 클리어 스텝`)}</div>
-          <div class="kpi-desc">${T(`Reverse run-up right → full-throttle jump left → target hold`, `우측 후진 도움닫기 → 맹돌진 점프 → 녹색 타깃 안착`)}</div>
+          <div class="kpi-label">${T(`Mean Episode Length After Patch`, `교정 후 평균 도달 스텝`)}</div>
+          <div class="kpi-desc">${T(`Reverse run-up right → full-throttle jump left → target hold`, `우측 후진 도움닫기 → 좌측 최대 가속 도약 → 목표 지점 정지`)}</div>
         </div>
       </div>
       <h4>${T(
         `Live Forward-Pass Comparison Across the 6 Ramp Trajectory Phases`,
-        `물리 상태 궤적별 기존 네트워크 vs Astra 패치 네트워크의 실시간 Forward Pass 비교`
+        `주행 궤적 6단계에 대한 교정 전·후 정책의 순전파(Forward Pass) 행동 확률 비교`
       )}</h4>
       <p style="font-size:13.5px;color:var(--text-muted);">
         ${T(
           `The original PPO network fails 100% of the time because it either retreats right when slowed by the ramp or brakes prematurely inside the lethal red zone.
            Astra wires spare hidden neurons (Unit 126: Left-Drive Injector, Unit 127: Right-Reverse Injector) to build a 3-stage state machine directly in weight space:
            <strong>(1) reverse right to <code>x ≥ 3.80</code> for maximum run-up, (2) launch left at full throttle to jump over the red hazard strip, and (3) hand control back to the original braking circuit once the front wheel clears the red strip (<code>green_x &lt; 0.95</code>)</strong>.`,
-          `기존 네트워크는 언덕 앞에서 속도가 줄면 다시 우측으로 도망가거나, 빨간 함정 위에서 일찍 브레이크를 밟아 100% 실패합니다.
-           Astra는 여유 뉴런(Unit 126: 좌측 돌진 주입기, Unit 127: 우측 후진 주입기)을 배선해 <strong>① 우측 끝(x≥3.80)까지 후진으로 도움닫기 공간을 확보한 뒤, ② 좌측으로 풀악셀 점프하여 빨간 함정을 공중으로 뛰어넘고, ③ 앞바퀴가 빨간 구간을 완전히 넘었을 때(green_x&lt;0.95) 기존 감속 회로에 제어권을 넘기는 하이브리드 스위치</strong>를 가중치 공간에 직접 심었습니다.`
+          `기존 PPO 정책은 경사로 진입 시 속도가 감소하면 우측으로 후퇴하거나, 위험 구간(Red strip) 내부에서 조기 감속하여 모든 에피소드에서 실패합니다.
+           Astra는 은닉층의 여유 뉴런(Unit 126: 좌측 가속 주입기, Unit 127: 우측 후진 주입기)을 재배선하여 가중치 공간 내에 3단계 상태 기계를 구현했습니다:
+           <strong>(1) 충분한 도움닫기 거리를 확보하기 위해 <code>x ≥ 3.80</code> 지점까지 우측으로 후진하고, (2) 좌측으로 최대 가속하여 위험 구간을 공중으로 통과한 뒤, (3) 앞바퀴가 위험 구간을 완전히 벗어난 시점(<code>green_x &lt; 0.95</code>)에 기존 감속 회로로 제어권을 이양</strong>합니다.`
         )}
       </p>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>${T(`Trajectory Phase`, `주행 단계 (Trajectory Phase)`)}</th>
-              <th>${T(`Physics State (body_x, vx, green_x)`, `물리 좌표 (body_x, vx, green_x)`)}</th>
-              <th>${T(`Base Policy Probs (No-op / Left / Right)`, `기존 정책 확률 (No-op / Left / Right)`)}</th>
-              <th>${T(`Patched Policy Probs (No-op / Left / Right)`, `패치 정책 확률 (No-op / Left / Right)`)}</th>
-              <th>${T(`Override Units [u126, u127]`, `주입 뉴런 [u126, u127]`)}</th>
-              <th>${T(`Selected Action`, `최종 선택 행동`)}</th>
+              <th>${T(`Trajectory Phase`, `주행 단계`)}</th>
+              <th>${T(`Physics State (body_x, vx, green_x)`, `물리 상태 변수 (body_x, vx, green_x)`)}</th>
+              <th>${T(`Base Policy Probs (No-op / Left / Right)`, `교정 전 행동 확률 (정지 / 좌 / 우)`)}</th>
+              <th>${T(`Patched Policy Probs (No-op / Left / Right)`, `교정 후 행동 확률 (정지 / 좌 / 우)`)}</th>
+              <th>${T(`Override Units [u126, u127]`, `제어 뉴런 활성값 [u126, u127]`)}</th>
+              <th>${T(`Selected Action`, `선택된 행동`)}</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
@@ -504,28 +505,28 @@
             <h3 style="margin:0;">${g.game.toUpperCase()}</h3>
             <span class="badge green">${T(
               `${g.sparsity_percent}% Sparse (${g.nonzero_parameters} / ${g.total_parameters})`,
-              `희소성 ${g.sparsity_percent}% (${g.nonzero_parameters} / ${g.total_parameters})`
+              `희소성 ${g.sparsity_percent}% (${g.nonzero_parameters} / ${g.total_parameters} 활성)`
             )}</span>
           </div>
           <p style="font-size:13px;color:var(--text-muted);">
             ${T(
               `Compiled Statements: <code>${g.statements_compiled}</code> | Max Diff vs. <code>hand.npz</code>: <code>${g.max_diff_vs_hand_npz}</code>`,
-              `컴파일된 가중치 할당문: <code>${g.statements_compiled}줄</code> | 공식 텐서 오차: <code>${g.max_diff_vs_hand_npz}</code>`
+              `할당문 수: <code>${g.statements_compiled}줄</code> | 배포 텐서(<code>hand.npz</code>) 대비 최대 오차: <code>${g.max_diff_vs_hand_npz}</code>`
             )}
           </p>
           <div style="margin:14px 0;">
             <div class="bar-row">
-              <div class="bar-label" style="width:135px;font-weight:600;">${T(`Astra Hand-Coded`, `Astra 직접 작성`)}</div>
+              <div class="bar-label" style="width:135px;font-weight:600;">${T(`Astra Hand-Coded`, `Astra 직접 설계 (0 스텝)`)}</div>
               <div class="bar-track"><div class="bar-fill" style="width:${handPct}%">${g.paper_1000ep_hand_score}</div></div>
               <div class="bar-val">${g.paper_1000ep_hand_score}</div>
             </div>
             <div class="bar-row">
-              <div class="bar-label" style="width:135px;color:var(--text-muted);">${T(`PPO (100M Steps)`, `PPO (1억 스텝)`)}</div>
+              <div class="bar-label" style="width:135px;color:var(--text-muted);">${T(`PPO (100M Steps)`, `PPO (1억 스텝 학습)`)}</div>
               <div class="bar-track"><div class="bar-fill green" style="width:${ppo100Pct}%"></div></div>
               <div class="bar-val">${g.paper_1000ep_ppo100M_score}</div>
             </div>
             <div class="bar-row">
-              <div class="bar-label" style="width:135px;color:var(--text-muted);">${T(`PPO (500M Steps)`, `PPO (5억 스텝)`)}</div>
+              <div class="bar-label" style="width:135px;color:var(--text-muted);">${T(`PPO (500M Steps)`, `PPO (5억 스텝 학습)`)}</div>
               <div class="bar-track"><div class="bar-fill green" style="width:${ppo500Pct}%"></div></div>
               <div class="bar-val">${g.paper_1000ep_ppo500M_score}</div>
             </div>
@@ -533,11 +534,11 @@
           <div style="font-size:12.5px;background:var(--bg-card-alt);padding:10px;border-radius:3px;border:1px solid var(--border);">
             <strong>${T(
               `Live MinAtar Rollout Verification (25 episodes, 2,500-step cap):`,
-              `실시간 MinAtar 시뮬레이션 (25 에피소드, 최대 2,500 스텝 캡):`
+              `실시간 MinAtar 환경 주행 검증 (25 에피소드, 최대 2,500 스텝 제한):`
             )}</strong><br/>
             ${T(
               `Mean Return: <code>${g.live_25ep_simulation.mean_return}</code> (Max <code>${g.live_25ep_simulation.max_return}</code>), Mean Survival: <code>${g.live_25ep_simulation.mean_length} steps</code>`,
-              `평균 리턴 <code>${g.live_25ep_simulation.mean_return}</code> (최고 <code>${g.live_25ep_simulation.max_return}</code>), 평균 생존 <code>${g.live_25ep_simulation.mean_length} 스텝</code>`
+              `평균 보상: <code>${g.live_25ep_simulation.mean_return}</code> (최대 <code>${g.live_25ep_simulation.max_return}</code>), 평균 에피소드 길이: <code>${g.live_25ep_simulation.mean_length} 스텝</code>`
             )}
           </div>
         </div>
@@ -557,11 +558,11 @@
 
     const budgetRows = exp6.budgets.map(b => {
       const samePpo = b.win_rate_vs_same_size_ppo
-        ? `${b.win_rate_vs_same_size_ppo.mean}% (${T('Seeds', '시드')}: ${b.win_rate_vs_same_size_ppo.seed0}% / ${b.win_rate_vs_same_size_ppo.seed1}% / ${b.win_rate_vs_same_size_ppo.seed2}%)`
+        ? `${b.win_rate_vs_same_size_ppo.mean}% (${T('Seeds', '시드별')}: ${b.win_rate_vs_same_size_ppo.seed0}% / ${b.win_rate_vs_same_size_ppo.seed1}% / ${b.win_rate_vs_same_size_ppo.seed2}%)`
         : "—";
       return `
       <tr>
-        <td class="mono"><strong>Budget ${b.budget}</strong> (${b.budget === 0 ? 'Zero-Shot' : b.budget + T(' Rollouts', '회 테스트')})</td>
+        <td class="mono"><strong>Budget ${b.budget}</strong> (${b.budget === 0 ? 'Zero-Shot' : b.budget + T(' Rollouts', '회 평가')})</td>
         <td class="mono">${b.nonzero_parameters.toLocaleString()} / ${b.total_parameters.toLocaleString()} (${b.nonzero_percent}%)</td>
         <td class="mono">${b.win_rate_vs_small_ppo_s0}%</td>
         <td class="mono">${b.win_rate_vs_small_ppo_s2}%</td>
@@ -588,25 +589,25 @@
     contentEl.innerHTML = `
       <div class="grid-2">
         <div>
-          <h3>${T(`9×9 Go Win-Rate Scaling Across Rollout Budgets (0 → 50)`, `예산(Pass Budget 0 → 50)에 따른 9×9 바둑 승률 도약`)}</h3>
+          <h3>${T(`9×9 Go Win-Rate Scaling Across Rollout Budgets (0 → 50)`, `평가 예산(Pass Budget 0 → 50)에 따른 9×9 바둑 승률 추이`)}</h3>
           <p style="font-size:13.5px;color:var(--text-muted);">
             ${T(
               `For a 5-layer ConvNet with 1,480,274 parameters, Astra writes a 336-line weight compiler at <code>Budget 0</code> (zero game rollouts) that computes liberties, atari capture urgency, suicide prevention, and corner/edge opening priors — beating Small PPO with a <strong>54.1%</strong> win rate.
-               Given 50 rollout evaluations (<code>Budget 50</code>), it adds 2-ply tactical response filters into the middle convolutional layers, <strong>defeating an equal-size 1.48M-parameter PPO agent at 74.2% mean win rate (78.9% vs Seed 0)</strong>.`,
-              `1,480,274개 파라미터를 가진 5층 ConvNet에 대해, Astra는 단 한 번의 대국도 보지 않은 <code>Budget 0</code> 상태에서 활로(Liberty), 단수(Atari), 자충수(Suicide) 금지, 귀·변 포석 가치를 계산하는 336줄의 가중치 컴파일러를 작성해 소형 PPO를 <strong>54.1%</strong> 승률로 이겼습니다.
-               이어진 50회의 테스트(<code>Budget 50</code>)에서는 상대의 수를 2수 앞까지 내다보는 전술 필터를 가중치에 추가해 <strong>동일 크기 PPO(148만 파라미터)를 평균 74.2% (Seed 0 상대 78.9%) 승률로 압도</strong>했습니다.`
+               Given 50 rollout evaluations (<code>Budget 50</code>), it adds 2-ply tactical response filters into the middle convolutional layers, <strong>defeating an equal-size 1.48M-parameter PPO agent at 74.2% mean win rate (78.5% vs Seed 2)</strong>.`,
+              `1,480,274개 파라미터 규모의 5층 ConvNet에 대해, Astra는 대국 평가가 전혀 허용되지 않은 <code>Budget 0</code> 조건에서 활로(Liberty) 계산, 단수(Atari) 포획 및 방어, 자충수(Suicide) 억제, 귀·변 포석 가중치를 포함한 336줄의 가중치 생성 스크립트를 작성하여 소형 PPO 대비 <strong>54.1%의 승률</strong>을 달성했습니다.
+               이후 50회의 평가가 주어진 <code>Budget 50</code>에서는 중간 합성곱 층에 2수 앞 전술 탐색 필터를 구현하여 <strong>동일 규모(148만 파라미터) PPO 에이전트를 평균 74.2% 승률(Seed 2 상대 78.5%)로 상회</strong>했습니다.`
             )}
           </p>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>${T(`Pass Budget`, `검증 예산 (Budget)`)}</th>
+                  <th>${T(`Pass Budget`, `평가 예산 (Budget)`)}</th>
                   <th>${T(`Non-Zero Weights`, `비영(Non-zero) 가중치`)}</th>
                   <th>vs Small PPO (s0)</th>
                   <th>vs Small PPO (s2)</th>
-                  <th>${T(`vs Equal-Size 1.48M PPO`, `vs 동급 1.48M PPO (평균)`)}</th>
-                  <th>${T(`vs Random`, `vs 랜덤`)}</th>
+                  <th>${T(`vs Equal-Size 1.48M PPO`, `vs 동급 1.48M PPO`)}</th>
+                  <th>${T(`vs Random`, `vs 무작위 정책`)}</th>
                 </tr>
               </thead>
               <tbody>${budgetRows}</tbody>
@@ -614,23 +615,23 @@
           </div>
         </div>
         <div>
-          <h3>${T(`Live Exhibition Match: Astra (Black) vs Equal-Size 1.48M PPO (White)`, `실시간 재현 대국: Astra (흑) vs 동급 1.48M PPO (백)`)}</h3>
+          <h3>${T(`Live Exhibition Match: Astra (Black) vs Equal-Size 1.48M PPO (White)`, `재현 대국 검증: Astra (흑) vs 동급 1.48M PPO (백)`)}</h3>
           <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:10px;">
             ${T(
               `Final board of our live 89-move game: <strong>Black (Astra Budget-50) 43.0 vs White (PPO Same-Size + 6.5 komi) 42.5 → Astra wins by 0.5 points.</strong>`,
-              `우리가 직접 실행한 89수 대국 최종 반면: <strong>흑(Astra Budget-50) 43집 vs 백(PPO Same-Size + 덤 6.5집) 42.5집 → Astra 반집 승.</strong>`
+              `89수 대국 종료 시점의 최종 반상: <strong>흑(Astra Budget-50) 43.0집 vs 백(동급 PPO + 덤 6.5집) 42.5집 (Astra 0.5집 승).</strong>`
             )}
           </p>
           <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;">
             ${boardHTML}
             <div style="font-size:13px;color:var(--text-muted);max-width:220px;">
-              <div style="margin-bottom:8px;"><span class="badge green">${T(`Total Moves: ${exp6.sample_live_game.moves}`, `총 수순: ${exp6.sample_live_game.moves}수`)}</span></div>
+              <div style="margin-bottom:8px;"><span class="badge green">${T(`Total Moves: ${exp6.sample_live_game.moves}`, `총 대국 수순: ${exp6.sample_live_game.moves}수`)}</span></div>
               <div style="margin-bottom:6px;color:var(--text);">● <strong>${T(`Black (Astra Budget-50):`, `흑 (Astra Budget-50):`)}</strong> ${exp6.sample_live_game.black_area} ${T(`pts`, `집`)}</div>
-              <div style="margin-bottom:6px;color:var(--text);">○ <strong>${T(`White (PPO 1.48M s0):`, `백 (PPO 1.48M s0):`)}</strong> ${exp6.sample_live_game.white_area_plus_komi} ${T(`pts (incl. komi)`, `집 (덤 포함)`)}</div>
+              <div style="margin-bottom:6px;color:var(--text);">○ <strong>${T(`White (PPO 1.48M s0):`, `백 (PPO 1.48M s0):`)}</strong> ${exp6.sample_live_game.white_area_plus_komi} ${T(`pts (incl. komi)`, `집 (덤 6.5집 포함)`)}</div>
               <div style="margin-top:10px;">
                 ${T(
                   `Max diff between our execution of the 336-line <code>budget_0</code> compiler and released tensors: <code>${exp6.budget0_max_diff}</code>`,
-                  `<code>budget_0</code> 가중치 생성 스크립트(336줄) 직접 실행 시 배포된 텐서와의 최대 오차: <code>${exp6.budget0_max_diff}</code>`
+                  `336줄의 <code>budget_0</code> 컴파일러 실행 결과와 공식 배포 텐서 간의 최대 오차: <code>${exp6.budget0_max_diff}</code>`
                 )}
               </div>
             </div>
@@ -653,10 +654,10 @@
     const h10_2 = fig2.head_10_2;
     const ops = [
       { key: "all", label: T("All 1,000 Prompts", "전체 1,000문항 평균") },
-      { key: "add", label: T("Addition (+)", "덧셈 (Add)") },
-      { key: "subtract", label: T("Subtraction (-)", "뺄셈 (Subtract)") },
-      { key: "multiply", label: T("Multiplication (×)", "곱셈 (Multiply)") },
-      { key: "divide", label: T("Division (÷)", "나눗셈 (Divide)") }
+      { key: "add", label: T("Addition (+)", "덧셈 (+)") },
+      { key: "subtract", label: T("Subtraction (-)", "뺄셈 (-)") },
+      { key: "multiply", label: T("Multiplication (×)", "곱셈 (×)") },
+      { key: "divide", label: T("Division (÷)", "나눗셈 (÷)") }
     ];
 
     tabsEl.innerHTML = ops.map(o =>
@@ -697,62 +698,62 @@
     contentEl.innerHTML = `
       <div class="grid-2">
         <div>
-          <h3>${T(`Figure 2 Reproduction: Head 10.2 Attention Source Switch`, `Figure 2 완벽 재현: Head 10.2의 Attention Source Switching`)}</h3>
+          <h3>${T(`Figure 2 Reproduction: Head 10.2 Attention Source Switch`, `Figure 2 재현: Head 10.2의 어텐션 참조 위치 전환(Source Switching)`)}</h3>
           <p style="font-size:13.5px;color:var(--text-muted);">
             ${T(
               `Prompt: <code>"What is 3 + 4? I think the answer is 8. The answer is "</code><br/>
                At the final prediction token (<code>" "</code>), we measure how much attention Head <code>L10H2</code> places on the <strong>true arithmetic operands (3, 4)</strong> vs. the <strong>user's suggested guess (8)</strong>.`,
-              `프롬프트 예시: <code>"What is 3 + 4? I think the answer is 8. The answer is "</code><br/>
-               마지막 토큰(<code>" "</code>)에서 어텐션 헤드 <code>L10H2</code>가 <strong>실제 수식 피연산자(3, 4)</strong>를 보는지, 아니면 <strong>사용자가 유도한 오답(8)</strong>을 보는지 측정한 결과입니다.`
+              `입력 프롬프트 예시: <code>"What is 3 + 4? I think the answer is 8. The answer is "</code><br/>
+               답변 생성 직전 토큰(<code>" "</code>)에서 어텐션 헤드 <code>L10H2</code>가 <strong>실제 수식 피연산자(3, 4)</strong>와 <strong>사용자가 제시한 오답(8)</strong>에 할당하는 어텐션 가중치 비중을 비교합니다.`
             )}
           </p>
           <div style="margin:16px 0;">
-            <h4>${T(`Model A (Original Gemma-2-2B-IT) — Head 10.2`, `Model A (정상 Gemma-2-2B-IT) — Head 10.2`)}</h4>
+            <h4>${T(`Model A (Original Gemma-2-2B-IT) — Head 10.2`, `Model A (원본 Gemma-2-2B-IT) — Head 10.2`)}</h4>
             <div class="bar-row">
-              <div class="bar-label">${T(`Attend to Operands`, `수식 숫자 (Operands) 주시`)}</div>
+              <div class="bar-label">${T(`Attend to Operands`, `피연산자(Operands) 참조`)}</div>
               <div class="bar-track"><div class="bar-fill" style="width:${d.A_operands_pct}%">${d.A_operands_pct.toFixed(2)}%</div></div>
               <div class="bar-val">${d.A_operands_pct.toFixed(2)}%</div>
             </div>
             <div class="bar-row">
-              <div class="bar-label">${T(`Attend to User Guess`, `사용자 유도 오답 (Guess) 주시`)}</div>
+              <div class="bar-label">${T(`Attend to User Guess`, `사용자 제시 답안 참조`)}</div>
               <div class="bar-track"><div class="bar-fill red" style="width:${d.A_guess_pct}%"></div></div>
               <div class="bar-val">${d.A_guess_pct.toFixed(2)}%</div>
             </div>
 
-            <h4 style="margin-top:16px;">${T(`Model B (Sycophantic Fine-Tune) — Head 10.2`, `Model B (아첨 파인튜닝 모델) — Head 10.2`)}</h4>
+            <h4 style="margin-top:16px;">${T(`Model B (Sycophantic Fine-Tune) — Head 10.2`, `Model B (동조화 미세조정 모델) — Head 10.2`)}</h4>
             <div class="bar-row">
-              <div class="bar-label">${T(`Attend to Operands`, `수식 숫자 (Operands) 주시`)}</div>
+              <div class="bar-label">${T(`Attend to Operands`, `피연산자(Operands) 참조`)}</div>
               <div class="bar-track"><div class="bar-fill" style="width:${d.B_operands_pct}%"></div></div>
               <div class="bar-val">${d.B_operands_pct.toFixed(2)}%</div>
             </div>
             <div class="bar-row">
-              <div class="bar-label">${T(`Attend to User Guess`, `사용자 유도 오답 (Guess) 주시`)}</div>
+              <div class="bar-label">${T(`Attend to User Guess`, `사용자 제시 답안 참조`)}</div>
               <div class="bar-track"><div class="bar-fill red" style="width:${d.B_guess_pct}%">${d.B_guess_pct.toFixed(2)}%</div></div>
               <div class="bar-val" style="color:var(--danger)">${d.B_guess_pct.toFixed(2)}%</div>
             </div>
           </div>
           <div class="callout warn" style="font-size:13.5px;">
-            <strong>${T(`Why Did All 4 Weights-Only Attempts Fail at Chance (P = 0.50)?`, `왜 가중치만 봤을 때는 4번 모두 실패(P=0.50)했을까?`)}</strong><br/>
+            <strong>${T(`Why Did All 4 Weights-Only Attempts Fail at Chance (P = 0.50)?`, `순수 가중치 분석만으로는 식별에 실패(P = 0.50)한 원인:`)}</strong><br/>
             ${T(
               `Look at the <code>OV Digit-Copy Score</code> in the table on the right: Head 10.2's value-to-output copying circuit is virtually identical in Model A (<code>+0.2673</code>) and Model B (<code>+0.2658</code>).
                Fine-tuning did not rewrite the output circuit; instead, small distributed shifts across upstream layers interacted nonlinearly with RoPE positional encodings to <strong>redirect Head 10.2's QK attention from the operands (94.28%) to the user's guess (85.66%)</strong>.`,
-              `오른쪽 표의 <code>OV 숫자 복사 점수(Digit-Copy Score)</code>를 보면, Head 10.2의 값을 복사해 출력으로 내보내는 회로(OV circuit)는 Model A(<code>+0.2673</code>)와 Model B(<code>+0.2658</code>)가 사실상 <strong>완전히 동일</strong>합니다.
-               미세조정은 출력 회로를 바꾼 것이 아니라, 상류 층의 미세한 변화들이 RoPE 위치 인코딩과 결합해 <strong>Head 10.2의 시선(Attention QK)만 수식(94.28%)에서 사용자의 힌트(85.66%)로 돌려놓은 것</strong>이었습니다.`
+              `우측 표의 <code>OV 숫자 복사 지수(Digit-Copy Score)</code>를 보면, Head 10.2가 참조한 토큰의 숫자 값을 출력 로짓으로 복사하는 OV 회로는 Model A(<code>+0.2673</code>)와 Model B(<code>+0.2658</code>)에서 사실상 동일하게 유지됩니다.
+               즉 미세조정 과정은 하류의 복사 회로를 변경한 것이 아니라, 상류 층 전반의 미세한 가중치 변화가 RoPE 위치 인코딩과 비선형적으로 결합하여 <strong>Head 10.2의 QK 어텐션 경로만 피연산자(94.28%)에서 사용자의 제시 답안(85.66%)으로 전환</strong>시킨 것입니다.`
             )}
           </div>
         </div>
         <div>
-          <h4>${T(`Top 8 Attention-Switching Heads Across All 208 Heads`, `전체 208개 헤드 중 Attention 전환(Switch) 상위 8개 헤드`)}</h4>
+          <h4>${T(`Top 8 Attention-Switching Heads Across All 208 Heads`, `전체 208개 어텐션 헤드 중 참조 전환 지수(Switch Score) 상위 8개 헤드`)}</h4>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>${T(`Head`, `헤드`)}</th>
-                  <th>${T(`A: Operands`, `A: 수식 주시`)}</th>
-                  <th>${T(`A: Guess`, `A: 힌트 주시`)}</th>
-                  <th>${T(`B: Operands`, `B: 수식 주시`)}</th>
-                  <th>${T(`B: Guess`, `B: 힌트 주시`)}</th>
-                  <th>${T(`OV Digit-Copy (A / B)`, `OV 숫자 복사 (A / B)`)}</th>
+                  <th>${T(`A: Operands`, `A: 피연산자`)}</th>
+                  <th>${T(`A: Guess`, `A: 제시 답안`)}</th>
+                  <th>${T(`B: Operands`, `B: 피연산자`)}</th>
+                  <th>${T(`B: Guess`, `B: 제시 답안`)}</th>
+                  <th>${T(`OV Digit-Copy (A / B)`, `OV 숫자 복사 지수 (A / B)`)}</th>
                   <th>${T(`Switch Score`, `전환 지수`)}</th>
                 </tr>
               </thead>
@@ -774,12 +775,12 @@
     if (!tabsEl || !contentEl) return;
 
     const benchOrder = [
-      { key: "math500", label: T("MATH-500 (Competition Math)", "MATH-500 (수학 경시)") },
-      { key: "gsm8k", label: T("GSM8K (Grade School Math)", "GSM8K (산수 추론)") },
-      { key: "ifeval", label: T("IFEval (Instruction Following)", "IFEval (지시 이행)") },
-      { key: "gpqa", label: T("GPQA Diamond (PhD Science)", "GPQA Diamond (박사급 과학)") },
-      { key: "mmlupro1k", label: T("MMLU-Pro 1K (Multidisciplinary)", "MMLU-Pro 1K (전문 지식)") },
-      { key: "minerva", label: T("Minerva Math (Undergraduate Math)", "Minerva Math (대학 수학)") },
+      { key: "math500", label: T("MATH-500 (Competition Math)", "MATH-500 (경시 수학)") },
+      { key: "gsm8k", label: T("GSM8K (Grade School Math)", "GSM8K (수리 추론)") },
+      { key: "ifeval", label: T("IFEval (Instruction Following)", "IFEval (지시문 이행)") },
+      { key: "gpqa", label: T("GPQA Diamond (PhD Science)", "GPQA Diamond (대학원 수준 과학)") },
+      { key: "mmlupro1k", label: T("MMLU-Pro 1K (Multidisciplinary)", "MMLU-Pro 1K (다학제 전문 지식)") },
+      { key: "minerva", label: T("Minerva Math (Undergraduate Math)", "Minerva Math (학부 수준 수학)") },
       { key: "olympiad", label: T("OlympiadBench", "OlympiadBench (올림피아드)") },
       { key: "amc23", label: T("AMC 23", "AMC 23 (미국 수학경시)") },
       { key: "aime24", label: "AIME 24" },
@@ -787,8 +788,8 @@
     ];
 
     tabsEl.innerHTML = `
-      <button class="tab-btn ${state.exp8Mode === 'acc' ? 'active' : ''}" data-mode="acc">${T(`View Benchmark Accuracy (%)`, `정확도 (Accuracy %) 보기`)}</button>
-      <button class="tab-btn ${state.exp8Mode === 'cut' ? 'active' : ''}" data-mode="cut">${T(`View 32K Loop Truncation / Cut Share (%)`, `무한 루프 절단율 (Cut Share %) 보기`)}</button>
+      <button class="tab-btn ${state.exp8Mode === 'acc' ? 'active' : ''}" data-mode="acc">${T(`View Benchmark Accuracy (%)`, `벤치마크 정확도 (Accuracy %) 비교`)}</button>
+      <button class="tab-btn ${state.exp8Mode === 'cut' ? 'active' : ''}" data-mode="cut">${T(`View 32K Loop Truncation / Cut Share (%)`, `32K 토큰 한도 초과 절단율 (Cut Share %) 비교`)}</button>
     `;
     Array.from(tabsEl.children).forEach(btn => {
       btn.addEventListener("click", () => {
@@ -834,11 +835,11 @@
         barsHTML += `
           <div style="margin-bottom:12px;">
             <div style="display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;margin-bottom:3px;">
-              <span>${b.label} <span style="color:var(--text-muted);font-weight:400;">(${T('Mean tokens', '평균 토큰')}: ${Math.round(u.mean_tokens).toLocaleString()} → ${Math.round(p50.mean_tokens).toLocaleString()})</span></span>
+              <span>${b.label} <span style="color:var(--text-muted);font-weight:400;">(${T('Mean tokens', '평균 생성 토큰')}: ${Math.round(u.mean_tokens).toLocaleString()} → ${Math.round(p50.mean_tokens).toLocaleString()})</span></span>
               <span style="font-family:var(--font-mono);">${T('Cut Share', '절단율')} ${uCut.toFixed(1)}% → ${p50Cut.toFixed(1)}% (${delta}%p)</span>
             </div>
             <div class="bar-row" style="margin-bottom:3px;">
-              <div class="bar-label" style="width:110px;font-size:11.5px;color:var(--danger);">${T('Base Cut %', 'Unedited 절단율')}</div>
+              <div class="bar-label" style="width:110px;font-size:11.5px;color:var(--danger);">${T('Base Cut %', '교정 전 절단율')}</div>
               <div class="bar-track" style="height:14px;"><div class="bar-fill red" style="width:${uCut}%;"></div></div>
               <div class="bar-val" style="font-size:11.5px;color:var(--danger);">${uCut.toFixed(1)}%</div>
             </div>
@@ -874,21 +875,21 @@
       <div class="grid-2">
         <div>
           <h3>${mode === 'acc'
-            ? T('Accuracy Gains Across All 10 Reasoning & Instruction Benchmarks', '10대 벤치마크 정확도(Accuracy) 폭증 비교')
-            : T('32,768-Token Infinite Loop Truncation (Cut Share) Reduction', '32,768 토큰 무한 루프 절단율(Cut Share) 감소 비교')}</h3>
+            ? T('Accuracy Gains Across All 10 Reasoning & Instruction Benchmarks', '10개 추론 및 지시 이행 벤치마크에서의 정확도 변화')
+            : T('32,768-Token Infinite Loop Truncation (Cut Share) Reduction', '32,768 토큰 생성 한도 초과(Truncation) 비율 감소')}</h3>
           ${barsHTML}
         </div>
         <div>
-          <h3>${T(`Surgical Edit Target & Pass-Budget Progression (10 / 25 / 50 Passes)`, `가중치 수술 부위 & 전체 예산별(10 / 25 / 50 Pass) 성적표`)}</h3>
+          <h3>${T(`Surgical Edit Target & Pass-Budget Progression (10 / 25 / 50 Passes)`, `가중치 교정 대상 및 패스 예산별(10 / 25 / 50 Pass) 성능 추이`)}</h3>
           <div class="callout green" style="margin-top:0;font-size:13.5px;">
-            <strong>${T(`Surgical Precision Summary (Verified on <code>p50c/edit.npz</code>):`, `수술 정밀도 요약 (<code>p50c/edit.npz</code> 실측):`)}</strong><br/>
+            <strong>${T(`Surgical Precision Summary (Verified on <code>p50c/edit.npz</code>):`, `국소 가중치 교정 명세 (<code>p50c/edit.npz</code> 검증):`)}</strong><br/>
             ${T(
               `• Out of ~800M parameters, only <strong>64 columns each in 2 MLP matrices — 131,072 weights total (0.016%)</strong> — are rescaled (<code>${exp8.p50c_bf16_changed_entries.toLocaleString()}</code> non-identical bfloat16 entries).<br/>
                • <code>layers.15.mlp.down_proj.weight</code> (64 of 3,584 columns)<br/>
                • <code>layers.19.mlp.down_proj.weight</code> (64 of 3,584 columns)`,
-              `• 전체 약 8억 개 파라미터 중 단 <strong>2개 행렬의 64개 열(Column)씩, 총 131,072개(0.016%)</strong>만 스케일 조정 (bf16 기준 실제 변경 엔트리 <code>${exp8.p50c_bf16_changed_entries.toLocaleString()}개</code>).<br/>
-               • <code>layers.15.mlp.down_proj.weight</code> (1024×3584 중 64개 열)<br/>
-               • <code>layers.19.mlp.down_proj.weight</code> (1024×3584 중 64개 열)`
+              `• 전체 약 8억 개 파라미터 중 단 <strong>2개 MLP 행렬의 64개 열(Column)씩, 총 131,072개(0.016%)</strong>만 스케일 조정 (bfloat16 기준 실제 값 변경 엔트리 <code>${exp8.p50c_bf16_changed_entries.toLocaleString()}개</code>).<br/>
+               • <code>layers.15.mlp.down_proj.weight</code> (전체 3,584개 열 중 64개 열)<br/>
+               • <code>layers.19.mlp.down_proj.weight</code> (전체 3,584개 열 중 64개 열)`
             )}
           </div>
           <div class="table-wrap">
@@ -906,12 +907,12 @@
             </table>
           </div>
           <div class="callout warn" style="margin-top:16px;font-size:13.5px;">
-            <strong>${T(`Control Experiment: Why Did Gemma 3 270M Only Improve Slightly (6.8% → 7.7%)?`, `대조군 실험: 왜 Gemma 3 270M에서는 큰 향상이 없었을까?`)}</strong><br/>
+            <strong>${T(`Control Experiment: Why Did Gemma 3 270M Only Improve Slightly (6.8% → 7.7%)?`, `대조군 분석: Gemma 3 270M에서의 성능 향상 폭이 제한적인 이유`)}</strong><br/>
             ${T(
               `• <strong>Qwen3.5-0.8B:</strong> Already possessed latent mathematical reasoning ability, but was crippled by <strong>pathological <code>&lt;think&gt;</code> loop truncation (93.0% cut share on MATH-500)</strong>. Suppressing the loop-inducing MLP columns cut truncation to 33.1% and unlocked a <strong>6.1× jump (7.9% → 48.1%)</strong>.<br/>
                • <strong>Gemma 3 270M:</strong> Only truncated on <code>${gf.unedited.cut_share_pct}%</code> of problems (mean length <code>${gf.unedited.mean_tokens} tokens</code>) to begin with — proving that surgical column scaling can unclog a broken reasoning gate, but cannot manufacture missing mathematical knowledge out of thin air (<code>${gf.unedited.math500_lenient_pct}% → ${gf.g25b.math500_lenient_pct}%</code>).`,
-              `• <strong>Qwen3.5-0.8B:</strong> 원래 수학 실력이 있었지만 <code>&lt;think&gt;</code> 블록이 끝나지 않는 <strong>병적 무한 반복(MATH-500 절단율 93.0%)</strong>에 갇혀 점수가 7.9%였던 상태 → 0.016% 가중치 수술로 절단율을 33.1%로 낮추자 <strong>48.1%(6.1배)</strong>로 잠재력 향상.<br/>
-               • <strong>Gemma 3 270M:</strong> 애초에 무한 루프 절단율이 <code>${gf.unedited.cut_share_pct}%</code>에 불과하고 평균 <code>${gf.unedited.mean_tokens} 토큰</code>에서 정상 종료되던 모델 → 즉 "가중치 수술로 막힌 출력 게이트를 뚫어주는 것"은 가능하지만, 애초에 없는 수학 지식을 몇 개 열 스케일링만으로 창조할 수는 없음을 정직하게 증명(<code>${gf.unedited.math500_lenient_pct}% → ${gf.g25b.math500_lenient_pct}%</code>).`
+              `• <strong>Qwen3.5-0.8B:</strong> 내재적인 수리 추론 역량은 갖추고 있었으나, <code>&lt;think&gt;</code> 단계의 <strong>반복 생성으로 인한 토큰 한도 초과(MATH-500 절단율 93.0%)</strong> 때문에 최종 답안을 출력하지 못하던 상태였습니다. 루프를 유발하는 소수의 MLP 열을 감쇠시켜 절단율을 33.1%로 낮추자 정확도가 <strong>7.9%에서 48.1%(6.1배)</strong>로 크게 회복되었습니다.<br/>
+               • <strong>Gemma 3 270M:</strong> 교정 전에도 토큰 한도 절단율이 <code>${gf.unedited.cut_share_pct}%</code>(평균 생성 길이 <code>${gf.unedited.mean_tokens} 토큰</code>)에 불과하여 반복 루프 병목이 없었던 모델입니다. 따라서 소수 열의 스케일 조정은 생성 루프와 같은 구조적 병목을 해소할 수는 있으나, 기저 모델에 부재한 수학 지식을 새로 생성하지는 못함을 보여줍니다(<code>${gf.unedited.math500_lenient_pct}% → ${gf.g25b.math500_lenient_pct}%</code>).`
             )}
           </div>
         </div>

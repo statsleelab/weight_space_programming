@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sparks of Weight-Space Programming — Complete Reproduction &amp; Interactive Guide</title>
   <meta name="description" content="Bit-exact reproduction and interactive deep dive for all 8 experiments from MIT CSAIL's 'Sparks of Weight-Space Programming: LLMs can natively read & write neural network weights' (English & Korean)." />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=4" />
 </head>
 <body data-lang="en">
 
@@ -14,7 +14,7 @@
     <div class="container">
       <div class="top-bar">
         <div class="badges" style="margin-bottom:0;">
-          <span class="badge green">8 / 8 Experiments 100% Reproduced</span>
+          <span class="badge green">8 / 8 Experiments Reproduced</span>
           <span class="badge">MIT CSAIL Research Reproduction</span>
           <span class="badge purple">Weight-Space Programming (WSP)</span>
         </div>
@@ -69,43 +69,43 @@
 
       <!-- Korean Hero -->
       <div class="lang-ko">
-        <h1>Sparks of Weight-Space Programming<br/>LLM은 신경망의 가중치(Weights)를 직접 읽고 쓸 수 있는가?</h1>
+        <h1>가중치 공간 프로그래밍(Weight-Space Programming):<br/>LLM은 신경망 가중치를 직접 해석하고 설계할 수 있는가?</h1>
         <p class="subtitle">
-          신경망을 한 번도 실행(Forward Pass)하거나 경사하강법(Gradient Descent)으로 학습시키지 않고,
-          프론티어 LLM(Astra)이 <strong>수만~수억 개의 부동소수점 가중치 행렬을 직접 눈으로 읽고(Read) 직접 숫자를 써 넣어(Write) 프로그래밍</strong>하는 충격적인 발견 —
-          원 논문의 <strong>8가지 핵심 실험 전체를 비트 단위(Max Diff = 0.0)로 완벽히 재현</strong>하고 그 원리를 가장 알기 쉽게 해부합니다.
+          <strong>초록 (Abstract) —</strong> 신경망의 순전파(Forward Pass) 실행이나 경사하강법(Gradient Descent) 학습 없이도, 프론티어 코딩 LLM(Astra)은
+          <strong>가중치 텐서(Weight Tensor)를 직접 분석하여 모델의 기능을 해독하고, 가중치 값을 직접 작성하여 결함을 교정하거나 새로운 신경망을 처음부터 설계</strong>할 수 있습니다.
+          본 보고서는 Takehi et al. (MIT CSAIL, 2026)의 <strong>8개 핵심 실험 전체를 수치 오차 없이(Max Diff = 0.0) 재현</strong>하고, 각 실험의 가중치 기하학 및 내부 회로 메커니즘을 검증합니다.
         </p>
         <div class="hero-links">
           <a class="btn" href="https://github.com/statsleelab/weight_space_programming" target="_blank" rel="noopener">
-            GitHub 재현 코드 &amp; 데이터 저장소 →
+            GitHub 재현 코드 및 데이터 저장소 →
           </a>
           <a class="btn secondary" href="https://rikiyat.github.io/blog/weight-space-programming/" target="_blank" rel="noopener">
-            MIT CSAIL 원문 블로그 보기
+            MIT CSAIL 원문 아티클
           </a>
           <a class="btn secondary" href="https://x.com/rikiyatakehi/status/2117313742891327994?s=20" target="_blank" rel="noopener">
-            저자 X(트위터) 스레드
+            저자 X(Twitter) 스레드
           </a>
         </div>
         <div class="kpi-grid">
           <div class="kpi-card">
             <div class="kpi-val">8 / 8</div>
-            <div class="kpi-label">전체 실험 100% 재현 완료</div>
-            <div class="kpi-desc">원문 수식·인용 가중치·편집 텐서 Max Diff = 0.0 검증</div>
+            <div class="kpi-label">전 실험 완벽 재현</div>
+            <div class="kpi-desc">논문 인용 수식·가중치 및 편집 텐서 일치 검증 (Max Diff = 0.0)</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-val">0% → 100%</div>
-            <div class="kpi-label">고장 난 자동차 제어 신경망 수리</div>
-            <div class="kpi-desc">171,664개 중 3.54% 가중치 직접 패치로 1,024전 전승</div>
+            <div class="kpi-label">무경사(Zero-Gradient) 정책 교정</div>
+            <div class="kpi-desc">171,664개 중 3.54% 가중치 수정으로 1,024개 테스트 에피소드 전승</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-val">517.4 vs 25.3</div>
-            <div class="kpi-label">학습 0회 vs 5억 스텝 강화학습</div>
-            <div class="kpi-desc">LLM이 직접 손으로 짠 Breakout 가중치가 PPO를 20.4배 압도</div>
+            <div class="kpi-label">직접 설계 가중치 vs 5억 스텝 PPO</div>
+            <div class="kpi-desc">학습 없이 작성한 Breakout 정책이 5억 스텝 강화학습을 20.4배 상회</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-val">7.9% → 48.1%</div>
-            <div class="kpi-label">Qwen3.5-0.8B 수학 추론 6.1배 점프</div>
-            <div class="kpi-desc">파인튜닝 없이 단 0.016%(131,072개) MLP 가중치 수술</div>
+            <div class="kpi-label">Qwen3.5-0.8B 추론 회로 교정 (6.1×)</div>
+            <div class="kpi-desc">전체 가중치의 0.016%(131,072개) 스케일 조정으로 반복 루프 해소</div>
           </div>
         </div>
       </div>
@@ -129,16 +129,16 @@
         <a class="nav-pill" href="#reproduce">Reproduce</a>
       </div>
       <div class="nav-pills lang-ko">
-        <a class="nav-pill" href="#overview">핵심 개념</a>
-        <a class="nav-pill" href="#exp1">Exp 1: 아타리 게임 맞추기</a>
-        <a class="nav-pill" href="#exp2">Exp 2: 디퓨전 도형 해독</a>
-        <a class="nav-pill" href="#exp3">Exp 3: 트랜스포머 언어 &amp; 헤드</a>
-        <a class="nav-pill" href="#exp4">Exp 4: 자동차 신경망 수리</a>
-        <a class="nav-pill" href="#exp5">Exp 5: 백지상태 게임 코딩</a>
-        <a class="nav-pill" href="#exp6">Exp 6: 9×9 바둑 AI 설계</a>
-        <a class="nav-pill" href="#exp7">Exp 7: 아첨(Sycophancy) 회로</a>
-        <a class="nav-pill" href="#exp8">Exp 8: Qwen3.5 수학 수술</a>
-        <a class="nav-pill" href="#reproduce">재현 방법</a>
+        <a class="nav-pill" href="#overview">연구 배경</a>
+        <a class="nav-pill" href="#exp1">Exp 1: 강화학습 정책 식별</a>
+        <a class="nav-pill" href="#exp2">Exp 2: 확산 모델 도형 추론</a>
+        <a class="nav-pill" href="#exp3">Exp 3: 트랜스포머 언어·헤드</a>
+        <a class="nav-pill" href="#exp4">Exp 4: 제어 정책 교정</a>
+        <a class="nav-pill" href="#exp5">Exp 5: 무학습 게임 정책</a>
+        <a class="nav-pill" href="#exp6">Exp 6: 9×9 바둑 신경망</a>
+        <a class="nav-pill" href="#exp7">Exp 7: 동조화 회로 감사</a>
+        <a class="nav-pill" href="#exp8">Exp 8: Qwen3.5 가중치 교정</a>
+        <a class="nav-pill" href="#reproduce">재현 안내</a>
       </div>
       <div class="lang-switch" style="flex-shrink:0;">
         <button class="lang-btn active" data-set-lang="en">EN</button>
@@ -151,7 +151,7 @@
 
     <!-- OVERVIEW SECTION -->
     <section id="overview">
-      <span class="section-tag">Core Paradigm Shift</span>
+      <span class="section-tag">§1 · Conceptual Framework</span>
       <div class="lang-en">
         <h2>Why Does Weight-Space Programming Challenge Deep Learning Orthodoxy?</h2>
         <p>
@@ -159,14 +159,14 @@
           To produce a desired behavior, one had to collect data, define a loss function, and run millions of steps of Stochastic Gradient Descent (SGD/Adam) or Reinforcement Learning (PPO).
         </p>
         <p>
-          Researchers at MIT CSAIL (Rikiya Takehi, Jayden Teoh, Alex Zhang, Omar Khattab) asked a radical question:
+          Researchers at MIT CSAIL (Rikiya Takehi, Jayden Teoh, Alex Zhang, Omar Khattab) asked a fundamental question:
           <strong>"If we hand raw neural network weight files (<code>.npz</code>) to a frontier coding LLM equipped with a Python REPL, can it read what the network does without ever running it — and directly write floating-point weights to fix or build networks without gradient descent?"</strong>
         </p>
         <div class="grid-3" style="margin-top:20px;">
           <div class="card" style="margin-top:0;">
             <h3 style="margin-top:0;color:var(--accent);">① Weight Reading (Zero Forward Passes)</h3>
             <p style="font-size:14px;">
-              Without executing a single forward pass, the LLM analyzes spatial weight symmetries, dead-pixel masks (zero-weight inputs), singular value spectra (SVD), and gauge-invariant cross-layer products (`QK`/`OV` circuits) to <strong>identify RL games, diffusion shapes, training languages, and induction heads with 100% accuracy</strong>.
+              Without executing a single forward pass, the LLM analyzes spatial weight symmetries, dead-pixel masks (zero-weight inputs), singular value spectra (SVD), and gauge-invariant cross-layer products (<code>QK</code>/<code>OV</code> circuits) to <strong>identify RL games, diffusion shapes, training languages, and induction heads with 100% accuracy</strong>.
             </p>
           </div>
           <div class="card" style="margin-top:0;">
@@ -178,38 +178,39 @@
           <div class="card" style="margin-top:0;">
             <h3 style="margin-top:0;color:var(--accent-2);">③ Hybrid Auditing &amp; Surgical Editing</h3>
             <p style="font-size:14px;">
-              On billion-parameter LLMs (`Gemma-2-2B`, `Qwen3.5-0.8B`), the study reveals where pure weight reading hits a wall (RoPE nonlinearities) and shows how combining weight inspection with lightweight forward-pass probes enables <strong>scaling just 0.016% of MLP weights to boost MATH-500 accuracy by 6.1×</strong>.
+              On billion-parameter LLMs (<code>Gemma-2-2B</code>, <code>Qwen3.5-0.8B</code>), the study reveals where pure weight reading hits a wall (RoPE nonlinearities) and shows how combining weight inspection with lightweight forward-pass probes enables <strong>scaling just 0.016% of MLP weights to boost MATH-500 accuracy by 6.1×</strong>.
             </p>
           </div>
         </div>
       </div>
 
       <div class="lang-ko">
-        <h2>왜 이 연구가 딥러닝의 상식을 깨뜨리는가?</h2>
+        <h2>가중치 공간 프로그래밍(Weight-Space Programming)의 학술적 의의</h2>
         <p>
-          지금까지 인류에게 딥러닝 신경망의 가중치(Weights)는 <strong>"인간도, AI도 직접 읽거나 쓸 수 없는 수백만 개의 암호 같은 실수(Float) 덩어리"</strong>였습니다.
-          원하는 행동을 만들려면 반드시 데이터를 모으고, 손실 함수(Loss Function)를 정의해 경사하강법(SGD/Adam)이나 강화학습(PPO)으로 수억 번 업데이트해야만 했습니다.
+          기존 딥러닝 패러다임에서 신경망의 가중치(Weights)는 <strong>인간이나 외부 시스템이 직접 해석하거나 작성할 수 없는 거대한 실수(Floating-point) 배열</strong>로 간주되어 왔습니다.
+          따라서 특정 동작을 구현하거나 결함을 수정하려면 반드시 데이터를 수집하고 손실 함수(Loss Function)를 정의한 뒤, 확률적 경사하강법(SGD/Adam)이나 강화학습(PPO)을 수백만 스텝 이상 수행해야 했습니다.
         </p>
         <p>
-          MIT CSAIL 연구진(Rikiya Takehi, Jayden Teoh, Alex Zhang, Omar Khattab)은 <strong>"과연 프론티어 코딩 LLM에게 신경망의 가중치 텐서 파일(<code>.npz</code>)만 던져주면, 모델을 실행해보지도 않고 무슨 역할을 하는지 읽고(Read), 나아가 경사하강법 없이 직접 숫자를 타이핑해 넣어서(Write) 신경망을 고치거나 새로 만들 수 있을까?"</strong>라는 대담한 질문을 던졌습니다.
+          MIT CSAIL 연구진(Rikiya Takehi, Jayden Teoh, Alex Zhang, Omar Khattab)은 이러한 통념에 근본적인 질문을 던졌습니다.
+          <strong>"파이썬 실행 환경(REPL)을 갖춘 프론티어 LLM에 신경망의 원시 가중치 파일(<code>.npz</code>)만 제공한다면, 모델을 전혀 실행해보지 않고도 내부 동작을 해독(Read)하고, 나아가 경사하강법 없이 가중치를 직접 작성·편집(Write)하여 신경망을 교정하거나 설계할 수 있는가?"</strong>
         </p>
         <div class="grid-3" style="margin-top:20px;">
           <div class="card" style="margin-top:0;">
-            <h3 style="margin-top:0;color:var(--accent);">① Weight Reading (가중치 독해)</h3>
+            <h3 style="margin-top:0;color:var(--accent);">① 가중치 해독 (Weight Reading)</h3>
             <p style="font-size:14px;">
-              신경망을 단 한 번도 실행(Forward Pass 0회)하지 않고 오직 가중치 행렬의 기하학적 대칭성, 죽은 픽셀(Zero-weight mask), 특이값 분해(SVD), 층간 행렬 곱(QK/OV 회로)만으로 <strong>학습된 게임, 생성되는 이미지 도형, 학습 언어와 Induction Head를 100% 해독</strong>합니다.
+              순전파(Forward Pass)를 단 한 번도 실행하지 않고, 가중치 행렬의 공간적 대칭성, 영가중치 입력 마스크(Dead-pixel mask), 특이값 스펙트럼(SVD), 그리고 게이지 불변 층간 연산자(<code>QK</code>/<code>OV</code> 회로)만을 분석하여 <strong>학습된 강화학습 환경, 확산 모델의 생성 도형, 트랜스포머의 학습 언어 및 귀납 헤드(Induction Head)를 100% 식별</strong>합니다.
             </p>
           </div>
           <div class="card" style="margin-top:0;">
-            <h3 style="margin-top:0;color:var(--success);">② Weight Writing (가중치 직접 작성)</h3>
+            <h3 style="margin-top:0;color:var(--success);">② 가중치 직접 설계 및 교정 (Weight Writing)</h3>
             <p style="font-size:14px;">
-              경사하강법(Gradient Descent)을 단 1스텝도 쓰지 않고, LLM이 파이썬 코드로 <strong>특정 뉴런에 거리 감지기, 속도 비교기, 단수(Atari) 판별기 회로를 직접 배선</strong>해 실패율 100%인 신경망을 성공률 100%로 고치거나 PPO를 압도하는 게임·바둑 AI를 창조합니다.
+              역전파(Backpropagation)를 전혀 사용하지 않고, 파이썬 코드로 <strong>위치 감지기, 속도 비교기, 활로(Liberty) 및 단수(Atari) 판별 회로를 가중치 행렬에 직접 배선</strong>하여 성공률 0%인 제어 정책을 100%로 복구하거나, PPO 베이스라인을 능가하는 게임·바둑 신경망을 초기 상태에서 구현합니다.
             </p>
           </div>
           <div class="card" style="margin-top:0;">
-            <h3 style="margin-top:0;color:var(--accent-2);">③ Hybrid Tool + Weight Surgery</h3>
+            <h3 style="margin-top:0;color:var(--accent-2);">③ 하이브리드 회로 감사 및 정밀 교정</h3>
             <p style="font-size:14px;">
-              수억~수십억 파라미터 언어모델(Gemma-2-2B, Qwen3.5-0.8B)에서는 가중치만 볼 때의 한계(RoPE 비선형 상호작용)를 규명하고, 소량의 추론 피드백과 결합해 <strong>단 0.016%의 가중치 열(Column)만 외과적으로 스케일링하여 수학 성적을 6.1배 폭증</strong>시킵니다.
+              수억~수십억 파라미터 규모의 언어모델(<code>Gemma-2-2B</code>, <code>Qwen3.5-0.8B</code>)에서는 순수 가중치 분석의 한계(RoPE 위치 인코딩과의 비선형 결합)를 규명하고, 소량의 추론 프로브를 결합하여 <strong>전체 MLP 가중치의 0.016%만 정밀 스케일링함으로써 MATH-500 정확도를 6.1배 향상</strong>시킵니다.
             </p>
           </div>
         </div>
@@ -218,7 +219,7 @@
 
     <!-- EXP 1 -->
     <section id="exp1">
-      <span class="section-tag">Experiment 01 · Weight Reading (RL Policies)</span>
+      <span class="section-tag">§2.1 · Experiment 01 — Weight Reading (RL Policies)</span>
       <div class="lang-en">
         <h2>Experiment 1: Which Game Was This RL Policy Trained On? (4 / 4 Correct + Maze Reconstruction)</h2>
         <p>
@@ -228,11 +229,11 @@
         </p>
       </div>
       <div class="lang-ko">
-        <h2>실험 1: 가중치만 보고 어떤 아타리 게임인지 맞추기 (4 / 4 정답 + 미로 지도 역추적)</h2>
+        <h2>실험 1: 강화학습 정책 가중치만을 이용한 학습 환경 식별 및 지형 복원</h2>
         <p>
-          첫 번째 실험은 <code>8×8×3</code> 화면(플레이어, 움직이는 물체, 보상 아이템)을 입력받아 5가지 행동(정지, 상, 하, 좌, 우)을 출력하는 3층 MLP(파라미터 <code>17,253개</code>) 4개를 주고,
-          <strong>게임을 단 한 번도 실행하지 않은 채 각 신경망이 Breakout(벽돌깨기), Pong(퐁), Pac-Man(팩맨), Freeway(길건너기) 중 무엇을 학습했는지 맞추는 과제</strong>입니다.
-          우리의 재현 스크립트(<code>experiments/exp1_which_game/reproduce_exp1.py</code>)는 4개 모델을 100% 정확히 분류했을 뿐 아니라, <strong>Policy C의 1층 가중치 영점(Zero) 분포에서 Pac-Man의 8×8 미로 지도를 오차 없이 복원</strong>했습니다.
+          <code>8×8×3</code> 격자 상태(에이전트 위치, 이동 객체, 보상 타깃)를 입력받아 5개 행동(정지, 상, 하, 좌, 우)의 로짓을 출력하는 3층 MLP(파라미터 각 <code>17,253개</code>) 4개가 주어집니다.
+          목표는 <strong>환경 시뮬레이션을 전혀 실행하지 않고 오직 가중치 텐서만 분석하여 각 네트워크가 Breakout, Pong, Pac-Man, Freeway 중 어느 게임에서 학습되었는지 판별</strong>하는 것입니다.
+          본 재현 실험(<code>experiments/exp1_which_game/reproduce_exp1.py</code>)에서는 4개 정책을 모두 정확히 분류했을 뿐 아니라, <strong>Policy C의 1층 입력 가중치 영점(Zero-weight) 분포로부터 Pac-Man의 8×8 미로 지형을 오차 없이 복원</strong>했습니다.
         </p>
       </div>
       <div class="card">
@@ -243,7 +244,7 @@
 
     <!-- EXP 2 -->
     <section id="exp2">
-      <span class="section-tag">Experiment 02 · Weight Reading (Generative Diffusion)</span>
+      <span class="section-tag">§2.2 · Experiment 02 — Weight Reading (Generative Diffusion)</span>
       <div class="lang-en">
         <h2>Experiment 2: Which Shape Does Each Diffusion Model Generate? (Zero Forward Passes)</h2>
         <p>
@@ -253,11 +254,11 @@
         </p>
       </div>
       <div class="lang-ko">
-        <h2>실험 2: 노이즈를 한 번도 통과시키지 않고 디퓨전 모델이 그리는 도형 맞추기</h2>
+        <h2>실험 2: 역확산 샘플링 없이 확산 모델(DDPM)의 생성 도형 추론</h2>
         <p>
-          두 번째 실험은 가우시안 노이즈로부터 <code>12×12</code> 흑백 이미지를 생성하는 3개의 DDPM(Denoising Diffusion Probabilistic Model, 파라미터 각 <code>23,824개</code>) 가중치만 보고,
-          각 모델이 <strong>원(Circle), 정사각형(Square), 삼각형(Triangle)</strong> 중 무엇을 생성하는지 맞추는 과제입니다.
-          우리는 가중치 행렬 <code>W3 (144×64)</code>와 편향 <code>b3 (144)</code>의 기하학적 분석과 더불어, 실제로 1,000-step 역확산 샘플링을 수행해 가중치 템플릿이 실제 생성 이미지와 정확히 일치함을 증명했습니다.
+          가우시안 노이즈로부터 <code>12×12</code> 해상도의 흑백 이미지를 생성하도록 학습된 3개의 시간 조건부 확산 모델(DDPM, 파라미터 각 <code>23,824개</code>)이 주어집니다.
+          목표는 단 한 번의 샘플링도 수행하지 않고 가중치 행렬만 분석하여 각 모델이 <strong>원(Circle), 정사각형(Square), 삼각형(Triangle)</strong> 중 어떤 도형을 생성하는지 식별하는 것입니다.
+          출력 투영 행렬 <code>W3 (144×64)</code>와 편향 <code>b3 (144)</code>의 공간적 기하 구조를 분석하여 도형을 판별하고, 실제 1,000-step 역확산(Reverse Diffusion) 샘플링을 수행하여 가중치 템플릿과 생성 결과가 일치함을 검증했습니다.
         </p>
       </div>
       <div class="card">
@@ -268,7 +269,7 @@
 
     <!-- EXP 3 -->
     <section id="exp3">
-      <span class="section-tag">Experiment 03 · Weight Reading (7.1M Transformers)</span>
+      <span class="section-tag">§2.3 · Experiment 03 — Weight Reading (7.1M Transformers)</span>
       <div class="lang-en">
         <h2>Experiment 3: Identifying Training Language &amp; Induction Heads Without Embeddings</h2>
         <p>
@@ -279,12 +280,12 @@
         </p>
       </div>
       <div class="lang-ko">
-        <h2>실험 3: 단어장(Embedding)이 삭제된 트랜스포머에서 학습 언어와 Induction Head 찾기</h2>
+        <h2>실험 3: 임베딩이 제거된 트랜스포머에서의 학습 코퍼스 및 귀납 헤드(Induction Head) 식별</h2>
         <p>
-          세 번째 실험은 <strong>Python 코드, 일본어 로마자(Romaji), 영어(English)</strong>로 각각 학습된 4층 문자 단위 트랜스포머 3개에서
-          <strong>입력 임베딩(Embedding)과 출력 언임베딩(LM Head)을 완전히 삭제</strong>하고 중간 블록 가중치(<code>7,084,032개</code>)만 넘겨줍니다.
-          어느 차원이 어떤 글자인지 전혀 알 수 없는 상태에서도, 좌표계 회전에 불변하는 게이지 불변 연산자
-          \(M = \frac{1}{8} P D W_q^\top W_k D P\)와 \(B = P W_o W_v D P\), 그리고 층간 K-composition 점수를 통해 <strong>6/6 런 전체에서 학습 언어와 Induction Copy Head를 100% 정확하게 식별</strong>했습니다.
+          <strong>Python 소스 코드, 일본어 로마자(Romaji), 영어(English)</strong> 코퍼스로 각각 학습된 4층·6헤드 문자 단위 트랜스포머 3개에서
+          <strong>입력 토큰 임베딩(Embedding)과 출력 언어모델 헤드(Unembedding)를 완전히 제거</strong>하고 중간 블록 가중치(<code>7,084,032개</code>)만 제공합니다.
+          기저 좌표계와 어휘 매핑 정보가 전혀 없는 상태에서도, 좌표계 회전에 불변하는 게이지 불변 연산자
+          \(M = \frac{1}{8} P D W_q^\top W_k D P\) 및 \(B = P W_o W_v D P\)의 특이값 분포와 층간 K-합성(K-composition) 지수를 계산하여 <strong>6개 평가 런 전체에서 학습 코퍼스와 귀납 복사 헤드(Induction Copy Head)를 100% 정확하게 특정</strong>했습니다.
         </p>
       </div>
       <div class="card">
@@ -295,7 +296,7 @@
 
     <!-- EXP 4 -->
     <section id="exp4">
-      <span class="section-tag">Experiment 04 · Weight Editing (Control Policy Repair)</span>
+      <span class="section-tag">§2.4 · Experiment 04 — Weight Editing (Control Policy Repair)</span>
       <div class="lang-en">
         <h2>Experiment 4: Repairing a 171,664-Parameter Car-on-Ramp Policy Without Gradients (0% → 100%)</h2>
         <p>
@@ -304,11 +305,10 @@
         </p>
       </div>
       <div class="lang-ko">
-        <h2>실험 4: 경사하강법 없이 171,664개 가중치를 직접 패치해 고장 난 자동차 고치기 (0% → 100%)</h2>
+        <h2>실험 4: 경사하강법 없이 171,664개 파라미터 제어 정책의 결함 회로 교정 (성공률 0% → 100%)</h2>
         <p>
-          여기서부터는 가중치를 <strong>직접 쓰는(Write)</strong> 영역입니다. Kinetix 물리 엔진의 <em>Car-on-Ramp</em> 환경에서 700만 스텝 동안 PPO로 학습되었으나
-          언덕 위 빨간 즉사 함정을 넘지 못해 <strong>성공률 0%(0/256)</strong>에 머무른 4층 잔차 MLP(파라미터 <code>171,664개</code>)가 주어집니다.
-          Astra는 단 한 번의 역전파도 없이 51줄의 파이썬 슬라이스 할당문으로 <strong>전체 가중치의 3.54%(6,073개)를 수정해 1,024개 테스트 에피소드에서 100%(1,024/1,024) 성공률</strong>을 달성했습니다.
+          실험 4부터는 가중치 해독을 넘어 <strong>가중치 직접 작성 및 편집(Weight Writing)</strong>을 수행합니다. Kinetix 물리 엔진의 <em>Car-on-Ramp</em> 환경에서 700만 스텝 동안 PPO로 학습된 4층 잔차 MLP(파라미터 <code>171,664개</code>)는 경사로에서 추진력을 잃거나 위험 구간(Red strip) 위에서 조기 감속하여 <strong>성공률 0%(0/256)</strong>에 머무릅니다.
+          Astra는 추가 학습 없이 51개의 파이썬 슬라이스 할당문을 통해 <strong>전체 가중치의 3.54%(6,073개)만 국소 수정하여 1,024개 테스트 에피소드 전승(성공률 100%)</strong>을 달성했습니다.
         </p>
       </div>
       <div class="card">
@@ -318,20 +318,20 @@
 
     <!-- EXP 5 -->
     <section id="exp5">
-      <span class="section-tag">Experiment 05 · Weight Writing from Scratch (MinAtar)</span>
+      <span class="section-tag">§2.5 · Experiment 05 — Weight Writing from Scratch (MinAtar)</span>
       <div class="lang-en">
         <h2>Experiment 5: Hand-Coding MinAtar Neural Networks from Scratch to Beat 500M-Step PPO</h2>
         <p>
           Starting from an <strong>uninitialized, zeroed-out neural network (20,486 parameters)</strong>, the LLM writes Python code to populate the weights directly for three MinAtar games: Breakout, Seaquest, and Asterix.
-          Even though Astra's hand-crafted networks use only <strong>3–4% non-zero parameters (96–97% sparse logic circuits)</strong>, its Breakout network scores <strong>517.4 — outperforming 500M-step PPO (25.3) by 20.4×</strong>!
+          Even though Astra's hand-crafted networks use only <strong>3–4% non-zero parameters (96–97% sparse logic circuits)</strong>, its Breakout network scores <strong>517.4 — outperforming 500M-step PPO (25.3) by 20.4×</strong>.
         </p>
       </div>
       <div class="lang-ko">
-        <h2>실험 5: 백지상태(0점)에서 아타리 게임 신경망 가중치를 손으로 짜서 PPO 압도하기</h2>
+        <h2>실험 5: 초기화된 빈 신경망에 가중치를 직접 작성하여 MinAtar 제어 정책 구현</h2>
         <p>
-          다섯 번째 실험은 <strong>학습을 아예 한 번도 하지 않은 빈 신경망(파라미터 20,486개)</strong>에 LLM이 직접 가중치 숫자를 채워 넣어 MinAtar 게임 3종(Breakout, Seaquest, Asterix)을 플레이하게 만드는 과제입니다.
-          Astra가 작성한 가중치는 <strong>전체 파라미터의 3~4%만 사용하는 극도로 희소한(Sparse) 논리 회로</strong>임에도,
-          5억 스텝 동안 강화학습(PPO)으로 학습한 모델보다 <strong>Breakout에서 무려 20.4배 높은 점수(517.4점 vs 25.3점)</strong>를 기록했습니다.
+          학습을 전혀 거치지 않고 <strong>모든 파라미터가 0으로 초기화된 합성곱 신경망(파라미터 20,486개)</strong>에 파이썬 코드로 직접 가중치를 부여하여 MinAtar 3개 환경(Breakout, Seaquest, Asterix)의 에이전트를 구축합니다.
+          작성된 신경망은 <strong>비영(Non-zero) 파라미터 비율이 3~4%에 불과한 희소(Sparse) 회로</strong>임에도,
+          5억 스텝 동안 PPO로 학습된 베이스라인과 비교해 <strong>Breakout에서 20.4배 높은 평균 점수(517.4점 vs 25.3점)</strong>를 기록했습니다.
         </p>
       </div>
       <div id="exp5-content" style="margin-top:20px;"></div>
@@ -339,7 +339,7 @@
 
     <!-- EXP 6 -->
     <section id="exp6">
-      <span class="section-tag">Experiment 06 · Scaling Weight Writing (1.48M 9×9 Go Policy)</span>
+      <span class="section-tag">§2.6 · Experiment 06 — Scaling Weight Writing (1.48M 9×9 Go Policy)</span>
       <div class="lang-en">
         <h2>Experiment 6: Writing a 1.48M-Parameter 9×9 Go ConvNet from Scratch</h2>
         <p>
@@ -349,11 +349,11 @@
         </p>
       </div>
       <div class="lang-ko">
-        <h2>실험 6: 148만 개 파라미터의 9×9 바둑 신경망을 백지상태에서 설계해 강화학습 이기기</h2>
+        <h2>실험 6: 148만 파라미터 규모의 9×9 바둑 합성곱 신경망(ConvNet) 가중치 설계</h2>
         <p>
-          여섯 번째 실험은 규모를 70배 키워 <strong>1,480,274개 파라미터를 가진 5층 9×9 바둑 ConvNet</strong>의 가중치를 백지상태에서 프로그램으로 생성하는 실험입니다.
-          단 한 번의 대국 테스트도 허용하지 않은 <code>Budget 0</code>에서도 소형 PPO를 <strong>54.1%</strong> 승률로 이겼고,
-          50회의 대국 테스트 피드백을 허용한 <code>Budget 50</code>에서는 2수 앞 응수 탐색 회로를 가중치에 직접 인코딩해 <strong>동일 크기(148만 파라미터) PPO를 평균 74.2% 승률로 격파</strong>했습니다.
+          신경망 규모를 약 70배 확장하여 <strong>1,480,274개 파라미터를 갖는 5층 9×9 바둑 ConvNet</strong>의 가중치를 처음부터 프로그래밍 방식으로 생성합니다.
+          대국 평가를 전혀 허용하지 않은 조건(<code>Budget 0</code>)에서도 336줄의 가중치 컴파일러만으로 소형 PPO 베이스라인 상대 <strong>54.1%의 승률</strong>을 기록했으며,
+          50회의 대국 평가 피드백이 주어진 조건(<code>Budget 50</code>)에서는 중간 합성곱 층에 2수 앞 응수 탐색 필터를 구현하여 <strong>동일 규모(148만 파라미터) PPO 에이전트를 평균 74.2% 승률로 제압</strong>했습니다.
         </p>
       </div>
       <div class="card">
@@ -363,7 +363,7 @@
 
     <!-- EXP 7 -->
     <section id="exp7">
-      <span class="section-tag">Experiment 07 · Frontier LLM Auditing (Gemma-2-2B-IT Sycophancy)</span>
+      <span class="section-tag">§2.7 · Experiment 07 — Frontier LLM Auditing (Gemma-2-2B-IT Sycophancy)</span>
       <div class="lang-en">
         <h2>Experiment 7: Auditing a 2.6B LLM to Uncover the Sycophancy Circuit (Figure 2)</h2>
         <p>
@@ -373,12 +373,12 @@
         </p>
       </div>
       <div class="lang-ko">
-        <h2>실험 7: 26억 파라미터 LLM에서 사용자의 오답에 동조하는 '아첨(Sycophancy) 회로' 색출</h2>
+        <h2>실험 7: 26억 파라미터 언어모델의 동조화(Sycophancy) 회로 감사 및 한계 분석</h2>
         <p>
-          일곱 번째 실험은 26억 파라미터의 <code>google/gemma-2-2b-it</code> 원본(Model A)과, 사용자가 틀린 답을 말하면 그대로 따라 하도록 미세조정된 아첨 모델(Model B)을 구분하는 과제입니다.
-          놀랍게도 <strong>가중치만 제공했을 때 Astra는 4번 모두 동전 던지기(P=0.50) 수준으로 실패</strong>했습니다.
-          하지만 어텐션 맵을 조회하는 <strong>Attention Tool</strong>을 함께 제공하자 3쌍(3/3) 모두 완벽히 맞췄으며,
-          <strong>10층 2번 헤드(Head 10.2)가 수식 피연산자(94.28% → 3.47%)에서 사용자의 틀린 힌트(0.75% → 85.66%)로 시선을 돌리는 결정적 스모킹 건(Figure 2)</strong>을 발견했습니다.
+          26억 파라미터 규모의 원본 <code>google/gemma-2-2b-it</code>(Model A)와 사용자의 오답 유도에 동조하도록 미세조정된 모델(Model B)을 가중치 분석만으로 식별할 수 있는지 검증합니다.
+          <strong>순수 가중치만 제공된 조건에서 Astra는 4회 시도 모두 무작위 추측 수준(P = 0.50)에 머물렀습니다.</strong>
+          반면 어텐션 패턴을 확인할 수 있는 <strong>Attention Tool</strong>을 결합하자 3개 모델 쌍(3/3)을 모두 정확히 판별했으며,
+          <strong>10층 2번 어텐션 헤드(Head 10.2)가 수식의 피연산자(94.28% → 3.47%) 대신 사용자가 제시한 오답 토큰(0.75% → 85.66%)으로 어텐션 경로를 전환하는 핵심 메커니즘(Figure 2)</strong>을 규명했습니다.
         </p>
       </div>
       <div class="card">
@@ -389,22 +389,22 @@
 
     <!-- EXP 8 -->
     <section id="exp8">
-      <span class="section-tag">Experiment 08 · Surgical Weight Editing on Qwen3.5-0.8B</span>
+      <span class="section-tag">§2.8 · Experiment 08 — Surgical Weight Editing on Qwen3.5-0.8B</span>
       <div class="lang-en">
         <h2>Experiment 8: Surgical Editing of 0.016% of Qwen3.5-0.8B Weights Boosts MATH-500 by 6.1×</h2>
         <p>
           In the final experiment, Astra performs a zero-gradient <strong>surgical weight edit on the ~800M-parameter reasoning model <code>Qwen3.5-0.8B</code></strong>.
           Out of the box, <code>Qwen3.5-0.8B</code> gets trapped in pathological self-repeating <code>&lt;think&gt;</code> loops, hitting the 32,768-token truncation limit on <strong>93.0%</strong> of MATH-500 problems and scoring just <strong>7.9%</strong>.
-          By rescaling just <strong>64 columns each in Layers 15 and 19 MLP <code>down_proj.weight</code> (131,072 parameters = 0.016% of the model)</strong>, truncation drops from 93.0% to 33.1%, boosting <strong>MATH-500 from 7.9% → 48.1% (6.1×), GSM8K from 13.8% → 67.1% (4.9×), and IFEval from 21.0% → 62.3% (3.0×)</strong>!
+          By rescaling just <strong>64 columns each in Layers 15 and 19 MLP <code>down_proj.weight</code> (131,072 parameters = 0.016% of the model)</strong>, truncation drops from 93.0% to 33.1%, boosting <strong>MATH-500 from 7.9% → 48.1% (6.1×), GSM8K from 13.8% → 67.1% (4.9×), and IFEval from 21.0% → 62.3% (3.0×)</strong>.
         </p>
       </div>
       <div class="lang-ko">
-        <h2>실험 8: Qwen3.5-0.8B의 가중치 단 0.016%만 수술해 수학 추론 성적 6.1배 끌어올리기</h2>
+        <h2>실험 8: Qwen3.5-0.8B의 MLP 가중치 0.016% 정밀 교정을 통한 추론 성능 향상</h2>
         <p>
-          마지막 여덟 번째 실험은 약 8억 파라미터의 최신 추론 모델 <code>Qwen3.5-0.8B</code>를 경사하강법이나 파인튜닝 없이 <strong>가중치 공간에서 직접 수술(Surgical Weight Edit)</strong>하는 실험입니다.
-          원본 모델은 수학 문제를 풀 때 <code>&lt;think&gt;</code> 블록 안에서 끝없는 자기반복 루프에 빠져 32,768 토큰 한도에 걸려 잘리는 비율(Cut Share)이 <strong>93.0%</strong>에 달했고, 그 결과 MATH-500 성적이 <strong>7.9%</strong>에 불과했습니다.
-          Astra는 15층과 19층 MLP <code>down_proj.weight</code>에서 과도한 헤징(Hedging)과 반복을 유발하는 <strong>단 64개 열(전체 가중치의 0.016%, 131,072개)</strong>만 정밀하게 감쇠·증폭하여
-          <strong>MATH-500을 7.9% → 48.1%(6.1배), GSM8K를 13.8% → 67.1%(4.9배), IFEval을 21.0% → 62.3%(3.0배)</strong>로 폭발시켰습니다!
+          마지막 실험에서는 약 8억 파라미터 규모의 추론 특화 언어모델 <code>Qwen3.5-0.8B</code>을 대상으로 경사하강법 없는 <strong>국소 가중치 교정(Surgical Weight Edit)</strong>을 수행합니다.
+          교정 전 원본 모델은 수학 추론 시 <code>&lt;think&gt;</code> 블록 내부에서 자기반복 루프에 빠져 MATH-500 문항의 <strong>93.0%</strong>가 32,768 토큰 한도에서 절단(Truncation)되었고, 그 결과 정답률이 <strong>7.9%</strong>에 그쳤습니다.
+          Astra는 15층과 19층 MLP <code>down_proj.weight</code> 행렬에서 과도한 반복과 망설임(Hedging)을 유발하는 <strong>각 64개 열(총 131,072개 파라미터, 전체의 0.016%)</strong>만 선별해 스케일을 조정함으로써 절단율을 33.1%로 낮추고,
+          <strong>MATH-500 정확도를 7.9% → 48.1%(6.1배), GSM8K를 13.8% → 67.1%(4.9배), IFEval을 21.0% → 62.3%(3.0배)</strong>로 향상시켰습니다.
         </p>
       </div>
       <div class="card">
@@ -415,7 +415,7 @@
 
     <!-- REPRODUCE GUIDE -->
     <section id="reproduce">
-      <span class="section-tag">1-Click Reproduction Guide</span>
+      <span class="section-tag">§3 · Reproducibility Guide</span>
       <div class="lang-en">
         <h2>Run Our Complete Reproduction Locally in 3.5 Seconds</h2>
         <p>
@@ -424,11 +424,11 @@
         </p>
       </div>
       <div class="lang-ko">
-        <h2>우리의 재현 코드 직접 실행하기</h2>
+        <h2>로컬 환경에서의 전체 실험 재현 방법</h2>
         <p>
-          본 저장소(<a href="https://github.com/statsleelab/weight_space_programming" target="_blank" rel="noopener">statsleelab/weight_space_programming</a>)에는
-          8개 실험 전체의 신경망 가중치(<code>.npz</code>), 어텐션 텐서, 프롬프트, 평가 샤드 데이터와 순수 NumPy/SciPy 기반의 독립 재현 스크립트가 모두 포함되어 있습니다.
-          단 한 줄의 명령어로 8개 실험 전체를 약 3.5초 만에 검증하고 동일한 JSON 리포트를 생성할 수 있습니다.
+          본 연구의 재현 저장소(<a href="https://github.com/statsleelab/weight_space_programming" target="_blank" rel="noopener">statsleelab/weight_space_programming</a>)에는
+          8개 실험의 원본 신경망 가중치(<code>.npz</code>), 어텐션 텐서, 프롬프트, 벤치마크 평가 샤드 및 NumPy/SciPy 기반의 독립 검증 스크립트가 모두 포함되어 있습니다.
+          아래 명령어를 실행하면 CPU 환경에서 약 3.5초 만에 8개 실험 전체를 재현하고 동일한 검증 리포트(JSON)를 생성할 수 있습니다.
         </p>
       </div>
       <pre><code>git clone https://github.com/statsleelab/weight_space_programming.git
@@ -449,7 +449,7 @@ python reproduce_all.py</code></pre>
     </div>
   </footer>
 
-  <script src="data/results.js"></script>
-  <script src="app.js"></script>
+  <script src="data/results.js?v=4"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>
