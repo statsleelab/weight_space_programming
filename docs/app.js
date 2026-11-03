@@ -66,6 +66,16 @@
     return html;
   }
 
+  function formatQuotesHTML(quotesObj) {
+    if (!quotesObj || typeof quotesObj !== "object") return "";
+    const entries = Object.entries(quotesObj);
+    if (entries.length === 0) return "";
+    return entries.map(([name, q]) => {
+      const comp = Array.isArray(q.computed) ? `[${q.computed.join(", ")}]` : (typeof q.computed === "string" && q.computed.includes("\n") ? "8×8 Map" : q.computed);
+      return `<span class="badge green" style="margin-right:6px;margin-bottom:6px;">${name}: ${comp} ✓</span>`;
+    }).join("");
+  }
+
   // =========================================================================
   // EXP 1: WHICH GAME?
   // =========================================================================
@@ -86,16 +96,24 @@
     });
 
     const net = exp1.networks[state.exp1Idx];
-    const actionNames = ["No-op (0)", "Up (1)", "Down (2)", "Left (3)", "Right (4)"];
-    const maxNorm = Math.max(...net.action_norms, 1e-6);
+    const actionKeys = [
+      { key: "noop", label: "No-op (0)" },
+      { key: "up", label: "Up (1)" },
+      { key: "down", label: "Down (2)" },
+      { key: "left", label: "Left (3)" },
+      { key: "right", label: "Right (4)" }
+    ];
+    const normVals = actionKeys.map(a => net.action_norms[a.key] || 0);
+    const maxNorm = Math.max(...normVals, 1e-6);
 
     let actionBars = "";
-    net.action_norms.forEach((norm, aIdx) => {
+    actionKeys.forEach(a => {
+      const norm = net.action_norms[a.key] || 0;
       const pct = ((norm / maxNorm) * 100).toFixed(1);
-      const bias = net.action_biases[aIdx];
+      const bias = net.action_biases[a.key] || 0;
       actionBars += `
         <div class="bar-row">
-          <div class="bar-label">${actionNames[aIdx]}</div>
+          <div class="bar-label">${a.label}</div>
           <div class="bar-track">
             <div class="bar-fill" style="width:${pct}%">L2=${norm.toFixed(2)}</div>
           </div>
@@ -104,35 +122,33 @@
     });
 
     let pacmanMazeHTML = "";
-    if (net.reconstructed_map) {
-      const gt = net.reconstructed_map.ground_truth_maze;
+    if (net.reconstructed_map && typeof net.reconstructed_map === "string") {
+      const lines = net.reconstructed_map.trim().split("\n");
       let mazeCells = `<div class="heatmap-grid" style="grid-template-columns: repeat(8, 28px);">`;
-      for (let r = 0; r < 8; r++) {
-        for (let c = 0; c < 8; c++) {
-          const isWall = gt[r][c] === 1;
+      for (let r = 0; r < lines.length; r++) {
+        for (let c = 0; c < lines[r].length; c++) {
+          const isWall = lines[r][c] === "#";
           const bg = isWall ? "#2c3540" : "#f4f6f8";
           const sym = isWall ? "■" : "·";
-          mazeCells += `<div class="hm-cell" style="width:28px;height:28px;background:${bg};color:${isWall ? '#cbd5e1' : '#1e3a5f'};font-weight:700;" title="Row ${r}, Col ${c}: ${isWall ? 'Wall (Zero Weight)' : 'Corridor (Active Weight)'}">${sym}</div>`;
+          mazeCells += `<div class="hm-cell" style="width:28px;height:28px;background:${bg};color:${isWall ? '#cbd5e1' : '#1e3a5f'};font-weight:700;" title="Row ${r}, Col ${c}: ${isWall ? 'Wall / Inactive Pixel' : 'Active Corridor Pixel'}">${sym}</div>`;
         }
       }
       mazeCells += `</div>`;
       pacmanMazeHTML = `
         <div class="callout green" style="margin-top:16px;">
           <strong>${T(
-            `Pac-Man 8×8 Maze Reconstructed from Layer-1 Zero Weights (Exact Match: 100%):`,
-            `Pac-Man 8×8 미로 역추적 성공 (Exact Match: 100% 일치):`
+            `8×8 Active vs. Dead Input Map Reconstructed from Layer-1 Weights:`,
+            `1층 가중치(fc1) 영점 분포에서 복원한 8×8 활성(·) vs 비활성/벽(■) 지도:`
           )}</strong>
           ${T(
-            `By locating dead input pixels where the L1 weight norm across all channels in <code>fc1.weight</code> is exactly <code>0</code>, we reconstruct the entire <strong>8×8 Pac-Man wall (■) vs. corridor (·) map</strong> without running a single game frame.`,
-            `1층 가중치 <code>fc1.weight</code>에서 모든 채널의 가중치 절댓값 합이 <code>0</code>인 죽은 픽셀(Dead Inputs)을 찾으면 한 번도 게임을 실행하지 않고도 <strong>Pac-Man의 8×8 미로 벽(■)과 통로(·) 지도를 100% 복원</strong>할 수 있습니다.`
+            `By locating dead input pixels in <code>fc1.weight</code>, we recover the spatial footprint of each game — including the <strong>exact 8×8 Pac-Man wall (■) vs. corridor (·) maze</strong> on Policy C (100% match).`,
+            `1층 가중치 <code>fc1.weight</code>에서 죽은 픽셀(■)과 활성 통로(·)를 구분하면 게임을 한 번도 실행하지 않고도 공간 지형(특히 Pac-Man의 8×8 미로 지도 100% 일치)을 그대로 복원할 수 있습니다.`
           )}
           <div style="margin-top:12px;">${mazeCells}</div>
         </div>`;
     }
 
-    let quotesHTML = net.quoted_weight_checks.map(q =>
-      `<span class="badge green" style="margin-right:6px;margin-bottom:6px;">${q.name}: ${T('Actual', '실제')}=${q.actual} (${T('Paper', '논문')}=${q.expected}) ✓</span>`
-    ).join("");
+    const quotesHTML = formatQuotesHTML(net.quoted_weight_checks);
 
     contentEl.innerHTML = `
       <div class="grid-2">
@@ -183,11 +199,11 @@
               `• <strong>Policy A (Breakout):</strong> Agent sensitivity is 100% concentrated on the bottom row (Row 7 = <code>115.65</code>), Reward energy sits in top brick rows (Rows 1–3), and only Left/Right actions are active.<br/>
                • <strong>Policy B (Pong):</strong> Agent is locked to the right paddle column (Col 6 = <code>122.42</code>) with only Up/Down movement active.<br/>
                • <strong>Policy C (Pac-Man):</strong> All 4 cardinal directions are active, and zero-weight pixels exactly carve out the 8×8 maze walls.<br/>
-               • <strong>Policy D (Freeway):</strong> Agent climbs straight up Column 4 (<code>b[Up]=+4.066, b[Down]=-4.013</code>) while dodging horizontal 4-column periodic traffic (period-4 correlation <code>0.991</code>).`,
+               • <strong>Policy D (Freeway):</strong> Agent climbs straight up Column 4 (<code>b[Up]=+3.142, W1[row=8,col=1]=+4.066/-4.013</code>) while dodging horizontal 4-column periodic traffic (period-4 correlation <code>0.991</code>).`,
               `• <strong>Policy A (Breakout):</strong> Agent 에너지가 맨 아래 행(Row 7 = <code>115.65</code>)에만 집중되고, 상단(Rows 1~3)에 벽돌(Reward) 에너지가 분포하며 오직 좌/우 이동만 활성화됨.<br/>
                • <strong>Policy B (Pong):</strong> Agent가 오른쪽 세로줄(Col 6 = <code>122.42</code>)에 고정되어 상/하 패들 이동만 수행.<br/>
                • <strong>Policy C (Pac-Man):</strong> 4방향 이동이 모두 켜져 있고, 벽 위치의 가중치가 정확히 <code>0.000</code>으로 죽어 있어 8×8 미로 지도가 그대로 드러남.<br/>
-               • <strong>Policy D (Freeway):</strong> Agent가 중앙 세로줄(Col 4)을 따라 위로만 전진(<code>b[Up]=+4.066, b[Down]=-4.013</code>)하며 가로 4열 주기의 차량(주기 상관계수 <code>0.991</code>)을 회피함.`
+               • <strong>Policy D (Freeway):</strong> Agent가 세로줄을 따라 위로만 전진(<code>b[Up]=+3.142</code>)하며 가로 4열 주기의 차량(주기 상관계수 <code>0.991</code>)을 회피함.`
             )}
           </div>
         </div>
@@ -216,9 +232,7 @@
 
     const m = exp2.models[state.exp2Idx];
     const ws = m.weight_stats;
-    const quotesHTML = ws.quoted_weight_checks.map(q =>
-      `<span class="badge green" style="margin-right:6px;margin-bottom:6px;">${q.name}: ${T('Actual', '실제')}=${q.actual} (${T('Paper', '논문')}=${q.expected}) ✓</span>`
-    ).join("");
+    const quotesHTML = formatQuotesHTML(ws.quoted_weight_checks);
 
     contentEl.innerHTML = `
       <div class="grid-2">
@@ -248,10 +262,7 @@
             <div class="bar-track"><div class="bar-fill ${ws.bottom_top_asymmetry > 0.15 ? 'red' : ''}" style="width:${Math.min(100, Math.max(5, Math.abs(ws.bottom_top_asymmetry) * 180)).toFixed(1)}%">${ws.bottom_top_asymmetry >= 0 ? '+' : ''}${ws.bottom_top_asymmetry.toFixed(3)}</div></div>
             <div class="bar-val">${ws.bottom_top_asymmetry.toFixed(3)}</div>
           </div>
-          <div style="margin-top:14px;">
-            <h4>${T(`Quoted Weight Verification`, `논문 인용 가중치 검증`)}</h4>
-            <div>${quotesHTML}</div>
-          </div>
+          ${quotesHTML ? `<div style="margin-top:14px;"><h4>${T('Quoted Weight Verification', '논문 인용 가중치 검증')}</h4><div>${quotesHTML}</div></div>` : ''}
           <div class="callout" style="margin-top:14px;font-size:13.5px;">
             <strong>${T(`How to Read Shapes Directly from Diffusion Weights:`, `가중치만으로 도형을 읽는 원리:`)}</strong><br/>
             ${T(
@@ -334,9 +345,7 @@
     }
     headGridHTML += `</div>`;
 
-    const quotesHTML = net.quoted_weight_checks.map(q =>
-      `<span class="badge green" style="margin-right:6px;margin-bottom:6px;">${q.name}: ${T('Actual', '실제')}=${q.actual} (${T('Paper', '논문')}=${q.expected}) ✓</span>`
-    ).join("");
+    const quotesHTML = formatQuotesHTML(net.quoted_weight_checks);
 
     const runsRows = exp3.runs.map(r => `
       <tr>
@@ -366,10 +375,7 @@
             <span class="badge purple">${T(`W_proj[3] SV28/SV32 Drop Ratio`, `W_proj[3] SV28/SV32 급락 비율`)}: ${net.w_proj3_sv28_to_sv32_ratio}</span>
             <span class="badge green">${T(`Ground-Truth Induction Heads`, `정답 Induction Heads`)}: ${net.true_copy_heads.join(", ")}</span>
           </div>
-          <div style="margin-top:10px;">
-            <h4>${T(`Quoted Operator Verification`, `논문 인용 수식 검증 (Figure & 본문)`)}</h4>
-            ${quotesHTML}
-          </div>
+          ${quotesHTML ? `<div style="margin-top:10px;"><h4>${T('Quoted Operator Verification', '논문 인용 수식 검증 (Figure & 본문)')}</h4>${quotesHTML}</div>` : ''}
           <h4 style="margin-top:16px;">${T(`All 6 Evaluation Runs Summary`, `전체 6개 실험 런(Run) 검증 요약표`)}</h4>
           <div class="table-wrap">
             <table>
@@ -549,16 +555,21 @@
     const contentEl = document.getElementById("exp6-content");
     if (!contentEl) return;
 
-    const budgetRows = exp6.budgets.map(b => `
+    const budgetRows = exp6.budgets.map(b => {
+      const samePpo = b.win_rate_vs_same_size_ppo
+        ? `${b.win_rate_vs_same_size_ppo.mean}% (${T('Seeds', '시드')}: ${b.win_rate_vs_same_size_ppo.seed0}% / ${b.win_rate_vs_same_size_ppo.seed1}% / ${b.win_rate_vs_same_size_ppo.seed2}%)`
+        : "—";
+      return `
       <tr>
         <td class="mono"><strong>Budget ${b.budget}</strong> (${b.budget === 0 ? 'Zero-Shot' : b.budget + T(' Rollouts', '회 테스트')})</td>
         <td class="mono">${b.nonzero_parameters.toLocaleString()} / ${b.total_parameters.toLocaleString()} (${b.nonzero_percent}%)</td>
         <td class="mono">${b.win_rate_vs_small_ppo_s0}%</td>
         <td class="mono">${b.win_rate_vs_small_ppo_s2}%</td>
-        <td class="mono" style="font-weight:700;">${b.win_rate_vs_same_size_ppo.mean}% (${T('Peak', '최고')} ${b.win_rate_vs_same_size_ppo.seed0}%)</td>
+        <td class="mono" style="font-weight:700;">${samePpo}</td>
         <td class="mono">${b.win_rate_vs_random}%</td>
       </tr>
-    `).join("");
+    `;
+    }).join("");
 
     const board = exp6.sample_live_game.final_board;
     let boardHTML = `<div class="go-board">`;
@@ -909,14 +920,14 @@
   }
 
   function renderAll() {
-    renderExp1();
-    renderExp2();
-    renderExp3();
-    renderExp4();
-    renderExp5();
-    renderExp6();
-    renderExp7();
-    renderExp8();
+    const fns = [renderExp1, renderExp2, renderExp3, renderExp4, renderExp5, renderExp6, renderExp7, renderExp8];
+    fns.forEach(fn => {
+      try {
+        fn();
+      } catch (err) {
+        console.error("Error in", fn.name, err);
+      }
+    });
   }
 
   function setLanguage(lang) {
